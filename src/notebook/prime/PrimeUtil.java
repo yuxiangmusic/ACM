@@ -10,16 +10,16 @@ public class PrimeUtil {
 	}
 
 	static class Generator {
-		final ArrayList<Integer> primeList = new ArrayList<>();
+		final ArrayList<Long> primeList = new ArrayList<>();
 
-		Generator(int n) {
-			for (int i = 2; i < n; i++)
+		Generator(long n) {
+			for (long i = 2; i < n; i++)
 				if (isPrime(i))
 					primeList.add(i);
 		}
 
-		boolean isPrime(int n) {
-			for (int p : primeList) {
+		boolean isPrime(long n) {
+			for (long p : primeList) {
 				if (p * p > n)
 					break;
 				if (n % p == 0)
@@ -28,5 +28,4 @@ public class PrimeUtil {
 			return true;
 		}
 	}
-
 }

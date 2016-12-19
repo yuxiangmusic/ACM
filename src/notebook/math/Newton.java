@@ -2,6 +2,8 @@ package notebook.math;
 
 public class Newton {
 
+	public static final double DELTA = 1e-10;
+
 	public static void main(String[] args) {
 		int c = 5;
 		System.out.println(sqrt(c));
@@ -14,11 +16,15 @@ public class Newton {
 		double x = c, next;
 		while (true) {
 			next = x - (x - c / x) / 2;
-			if (next == x)
+			if (isNaN(next) || Math.abs(next - x) < DELTA)
 				break;
 			x = next;
 		}
 		return x;
+	}
+
+	public static boolean isNaN(double x) {
+		return x != x;
 	}
 
 }

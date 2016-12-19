@@ -8,11 +8,13 @@ import notebook.math.Newton;
 
 public class NewtonTest {
 
-	static final double DELTA = 1e-15;
+	static final int n = 1000;
 
 	@Test
 	public void test() {
-		assertEquals(Math.sqrt(5), Newton.sqrt(5), DELTA);
+		for (int i = 0; i < 1000; i++) {
+			assertEquals(Math.sqrt(i), Newton.sqrt(i), Newton.DELTA);
+		}
 	}
 
 }

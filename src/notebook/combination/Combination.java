@@ -1,37 +1,36 @@
 package notebook.combination;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Combination {
 
 	public static void main(String[] args) {
 		Generator g = new Generator(6, 3);
-		for (int[] c : g.all)
-			System.out.println(Arrays.toString(c));
+		for (List<Integer> c : g.all)
+			System.out.println(c);
 	}
 
 	static class Generator {
-		final List<int[]> all = new ArrayList<>();
+		final List<List<Integer>> all = new ArrayList<>();
 		final int n, k;
 
 		Generator(int n, int k) {
 			this.n = n;
 			this.k = k;
 
-			generate(new int[] {});
+			generate(new ArrayList<>());
 		}
 
-		void generate(int[] cur) {
-			if (cur.length == k) {
+		void generate(List<Integer> cur) {
+			if (cur.size() == k) {
 				all.add(cur);
 			} else {
-				int min = cur.length == 0 ? 0 : (cur[cur.length - 1] + 1);
-				for (int i = min; i <= n - (k - cur.length); i++) {
-					int[] next = Arrays.copyOf(cur, cur.length + 1);
-					next[cur.length] = i;
-					generate(next);
+				int min = cur.isEmpty() ? 0 : (cur.get(cur.size() - 1) + 1);
+				for (int i = min; i <= n - (k - cur.size()); i++) {
+					List<Integer> copy = new ArrayList<>(cur);
+					copy.add(i);
+					generate(copy);
 				}
 			}
 		}

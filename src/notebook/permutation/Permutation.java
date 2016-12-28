@@ -1,7 +1,6 @@
 package notebook.permutation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -9,23 +8,25 @@ public class Permutation {
 
 	public static void main(String[] args) {
 		Generator g = new Generator(6, 3);
-		for (int[] c : g.all)
-			System.out.println(Arrays.toString(c));
+		for (List<Integer> p : g.all)
+			System.out.println(p);
+		System.out.println(g.all.size());
 	}
 
 	static class Generator {
-		final List<int[]> all = new ArrayList<>();
+		final List<List<Integer>> all = new ArrayList<>();
 		final int n, k;
 
 		Generator(int n, int k) {
 			this.n = n;
 			this.k = k;
 
-			generate(new int[] {});
+			// generate(new ArrayList<Integer>());
+			generate(new ArrayList<Integer>(), 0);
 		}
 
-		void generate(int[] cur) {
-			if (cur.length == k) {
+		void generate(List<Integer> cur) {
+			if (cur.size() == k) {
 				all.add(cur);
 			} else {
 				HashSet<Integer> rest = new HashSet<>();
@@ -33,11 +34,24 @@ public class Permutation {
 					rest.add(i);
 				for (int i : cur)
 					rest.remove(i);
-
 				for (int r : rest) {
-					int[] next = Arrays.copyOf(cur, cur.length + 1);
-					next[cur.length] = r;
-					generate(next);
+					List<Integer> copy = new ArrayList<>(cur);
+					copy.add(r);
+					generate(copy);
+				}
+			}
+		}
+
+		void generate(List<Integer> cur, int begin) {
+			if (cur.size() == k) {
+				all.add(cur);
+			} else {
+				for (int i = begin; i <= n - (k - cur.size()); i++) {
+					for (int j = cur.size(); j >= 0; j--) {
+						List<Integer> copy = new ArrayList<>(cur);
+						copy.add(j, i);
+						generate(copy, i + 1);
+					}
 				}
 			}
 		}

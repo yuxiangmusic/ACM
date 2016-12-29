@@ -54,7 +54,7 @@ public class SearchUtil {
 			else
 				l = m + 1;
 		}
-		return -1 - l;
+		return ~l;
 	}
 
 	public static int binarySearchRec(int[] arr, int key) {

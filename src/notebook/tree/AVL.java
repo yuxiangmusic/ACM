@@ -2,6 +2,8 @@ package notebook.tree;
 
 import java.util.Arrays;
 
+import util.ArrayUtil;
+
 // TODO need test
 public class AVL<E> {
 
@@ -18,7 +20,7 @@ public class AVL<E> {
 	public static void main(String[] args) {
 		AVL<Integer> tree = new AVL<>();
 
-		int[] arr = notebook.array.Shuffle.getRandArray(10);
+		int[] arr = ArrayUtil.getRandArray(10);
 		System.out.println(Arrays.toString(arr));
 
 		for (int i : arr)

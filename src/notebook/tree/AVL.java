@@ -7,6 +7,18 @@ import util.ArrayUtil;
 // TODO need test
 public class AVL<E> {
 
+	public static void main(String[] args) {
+		AVL<Integer> tree = new AVL<>();
+	
+		int[] arr = ArrayUtil.getRandArray(10);
+		System.out.println(Arrays.toString(arr));
+	
+		for (int i : arr)
+			tree.add(i);
+	
+		System.out.println(tree);
+	}
+
 	class Node {
 		E data;
 		int h = 1;
@@ -15,18 +27,6 @@ public class AVL<E> {
 		Node(E data) {
 			this.data = data;
 		}
-	}
-
-	public static void main(String[] args) {
-		AVL<Integer> tree = new AVL<>();
-
-		int[] arr = ArrayUtil.getRandArray(10);
-		System.out.println(Arrays.toString(arr));
-
-		for (int i : arr)
-			tree.add(i);
-
-		System.out.println(tree);
 	}
 
 	Node root;

@@ -16,9 +16,8 @@ public class SegmentTreeTest {
 
 	static long sumBruteForce(int from, int to) {
 		long sum = 0;
-		for (int i = from; i <= to; i++) {
+		for (int i = from; i <= to; i++)
 			sum += arr[i];
-		}
 		return sum;
 	}
 

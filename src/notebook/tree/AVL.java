@@ -10,7 +10,7 @@ public class AVL<E> {
 	public static void main(String[] args) {
 		AVL<Integer> tree = new AVL<>();
 	
-		int[] arr = ArrayUtil.getRandArray(10);
+		int[] arr = ArrayUtil.getRandomArrayNoDup(10);
 		System.out.println(Arrays.toString(arr));
 	
 		for (int i : arr)

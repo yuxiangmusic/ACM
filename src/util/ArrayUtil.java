@@ -52,4 +52,19 @@ public class ArrayUtil {
 			arr[i] ^= arr[j];
 		}
 	}
+
+	public static void reverse(int[] arr) {
+		reverse(arr, 0, arr.length - 1);
+	}
+
+	public static void reverse(int[] arr, int l, int h) {
+		while (l < h) {
+			arr[l] ^= arr[h];
+			arr[h] ^= arr[l];
+			arr[l] ^= arr[h];
+			l++;
+			h--;
+		}
+	}
+
 }

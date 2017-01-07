@@ -16,6 +16,20 @@ public class ListNode {
 			nodes[i - 1].next = nodes[i] = new ListNode(arr[i]);
 	}
 
+	public ListNode get(int index) {
+		ListNode cur = this;
+		for (int i = 0; i < index; i++)
+			cur = cur.next;
+		return cur;
+	}
+
+	public ListNode tail() {
+		ListNode cur = this;
+		while (cur.next != null)
+			cur = cur.next;
+		return cur;
+	}
+
 	@Override
 	public String toString() {
 		return String.valueOf(val);

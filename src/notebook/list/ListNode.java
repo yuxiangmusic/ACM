@@ -1,4 +1,4 @@
-package util;
+package notebook.list;
 
 public class ListNode {
 	public int val;

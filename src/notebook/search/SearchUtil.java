@@ -13,14 +13,17 @@ public class SearchUtil {
 	public static int binarySearchBiasL(int[] arr, int key) {
 		int l = 0, h = arr.length - 1;
 		while (l <= h) {
-			int m = (l + h) >>> 1; // unsigned bit shift to avoid overflow
-			if (key == arr[m] && // reach leftmost
-					(m == 0 || arr[m - 1] < arr[m]))
-				return m;
-			else if (key <= arr[m])
+			int m = (l + h) >>> 1;
+			if (key == arr[m]) {
+				if (m == 0 || arr[m - 1] < arr[m])
+					return m;
+				else
+					h = m - 1;
+			} else if (key < arr[m]) {
 				h = m - 1;
-			else
+			} else {
 				l = m + 1;
+			}
 		}
 		return -1 - l;
 	}
@@ -28,14 +31,17 @@ public class SearchUtil {
 	public static int binarySearchBiasR(int[] arr, int key) {
 		int l = 0, h = arr.length - 1;
 		while (l <= h) {
-			int m = (l + h) >>> 1; // unsigned bit shift to avoid overflow
-			if (key == arr[m] && // reach rightmost
-					(m == arr.length - 1 || arr[m + 1] > arr[m]))
-				return m;
-			else if (key < arr[m])
+			int m = (l + h) >>> 1;
+			if (key == arr[m]) {
+				if (m == arr.length - 1 || arr[m + 1] > arr[m])
+					return m;
+				else
+					l = m + 1;
+			} else if (key < arr[m]) {
 				h = m - 1;
-			else
+			} else {
 				l = m + 1;
+			}
 		}
 		return -1 - l;
 	}

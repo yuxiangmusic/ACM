@@ -1,18 +1,10 @@
-package util;
+package notebook.array;
 
 import java.util.Random;
 
 public class ArrayUtil {
 
 	static Random rand = new Random();
-
-	public static int[] getRandomArrayNoDup(int n) {
-		int[] arr = new int[n];
-		for (int i = 0; i < n; i++)
-			arr[i] = i;
-		shuffle(arr);
-		return arr;
-	}
 
 	public static int[] getRandomArray(int size) {
 		return getRandomArray(0, size, size);
@@ -22,6 +14,14 @@ public class ArrayUtil {
 		int[] arr = new int[size];
 		for (int i = 0; i < size; i++)
 			arr[i] = begin + rand.nextInt(end - begin);
+		return arr;
+	}
+
+	public static int[] getRandomArrayNoDup(int n) {
+		int[] arr = new int[n];
+		for (int i = 0; i < n; i++)
+			arr[i] = i;
+		shuffle(arr);
 		return arr;
 	}
 
@@ -40,6 +40,20 @@ public class ArrayUtil {
 		return l;
 	}
 
+	public static void reverse(int[] arr) {
+		reverse(arr, 0, arr.length - 1);
+	}
+
+	public static void reverse(int[] arr, int l, int h) {
+		while (l < h) {
+			arr[l] ^= arr[h];
+			arr[h] ^= arr[l];
+			arr[l] ^= arr[h];
+			l++;
+			h--;
+		}
+	}
+
 	public static void shuffle(int[] arr) {
 		for (int i = arr.length; i > 0; i--)
 			swap(arr, i - 1, rand.nextInt(i));
@@ -53,18 +67,19 @@ public class ArrayUtil {
 		}
 	}
 
-	public static void reverse(int[] arr) {
-		reverse(arr, 0, arr.length - 1);
-	}
-
-	public static void reverse(int[] arr, int l, int h) {
-		while (l < h) {
-			arr[l] ^= arr[h];
-			arr[h] ^= arr[l];
-			arr[l] ^= arr[h];
-			l++;
-			h--;
+	public static int kthLargest(int[] arr, int k) {
+		int l = 0, h = arr.length - 1;
+		while (l <= h) {
+			int p = partition(arr, l, h);
+			int rank = arr.length - p;
+			if (rank == k)
+				return arr[p];
+			else if (rank > k)
+				l = p + 1;
+			else
+				h = p - 1;
 		}
+		return -1;
 	}
 
 }

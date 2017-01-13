@@ -1,7 +1,5 @@
 package notebook.list;
 
-import util.ListNode;
-
 public class CycleDection {
 
 	public static void main(String[] args) {

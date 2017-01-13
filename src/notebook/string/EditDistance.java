@@ -1,6 +1,15 @@
 package notebook.string;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 public class EditDistance {
+	
+	@Test
+	public void test() {
+		assertEquals(1, EditDistance.minDistance("", "a"));
+	}
 
 	public static int minDistance(String s, String t) {
 		int m = s.length();

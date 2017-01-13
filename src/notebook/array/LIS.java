@@ -2,8 +2,6 @@ package notebook.array;
 
 import java.util.Arrays;
 
-import util.ArrayUtil;
-
 public class LIS {
 
 	public static void main(String[] args) {

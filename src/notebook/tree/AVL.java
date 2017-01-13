@@ -2,7 +2,7 @@ package notebook.tree;
 
 import java.util.Arrays;
 
-import util.ArrayUtil;
+import notebook.array.ArrayUtil;
 
 // TODO need test
 public class AVL<E> {

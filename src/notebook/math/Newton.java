@@ -1,13 +1,18 @@
 package notebook.math;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 public class Newton {
 
 	public static final double DELTA = 1e-10;
 
-	public static void main(String[] args) {
-		int c = 5;
-		System.out.println(sqrt(c));
-		System.out.println(Math.sqrt(c));
+	@Test
+	public void test() {
+		for (int i = 0; i < 1000; i++) {
+			assertEquals(Math.sqrt(i), Newton.sqrt(i), Newton.DELTA);
+		}
 	}
 
 	// f(x) = x^2 - n = 0

@@ -1,4 +1,4 @@
-package util;
+package notebook.string;
 
 public class StringUtil {
 

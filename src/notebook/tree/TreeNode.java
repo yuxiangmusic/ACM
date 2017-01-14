@@ -54,7 +54,9 @@ public class TreeNode {
 	}
 
 	public String toStringAsTree() {
-		return toStringAsTree(this, 0);
+		StringBuilder sb = new StringBuilder();
+		toStringAsTree(sb, this, 0);
+		return sb.toString();
 	}
 
 	public String toStringAsList() {
@@ -73,17 +75,15 @@ public class TreeNode {
 		return p == q || p != null && q != null && p.val == q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
 	}
 
-	private String toStringAsTree(TreeNode root, int depth) {
-		String s = "";
+	private void toStringAsTree(StringBuilder sb, TreeNode root, int depth) {
 		for (int i = 0; i < depth; i++)
-			s += " ";
-		s += root + "\n";
+			sb.append(' ');
+		sb.append(root).append('\n');
 		if (root == null)
-			return s;
+			return;
 		if (root.left != null || root.right != null) {
-			s += toStringAsTree(root.left, depth + 1);
-			s += toStringAsTree(root.right, depth + 1);
+			toStringAsTree(sb, root.left, depth + 1);
+			toStringAsTree(sb, root.right, depth + 1);
 		}
-		return s;
 	}
 }

@@ -2,54 +2,82 @@ package notebook.tree;
 
 public class SegmentTree {
 
-	final long[] arr;
-	final long[] heap;
+	final class Node {
+		Node left, right;
+		int begin, end, sum;
 
-	public SegmentTree(long[] arr) {
-		this.arr = arr;
-		int length = (int) Math.pow(2, 1 + Math.ceil(Math.log(arr.length) / Math.log(2))) - 1;
-		this.heap = new long[length];
-
-		buildRec(0, 0, arr.length - 1);
+		Node(Node left, Node right, int begin, int end, int sum) {
+			this.left = left;
+			this.right = right;
+			this.begin = begin;
+			this.end = end;
+			this.sum = sum;
+		}
 	}
 
-	private long buildRec(int heapIndex, int l, int h) {
-		if (l >= h)
-			return heap[heapIndex] = arr[l];
-		int mid = (l + h) >>> 1;
-		long lsum = buildRec(heapIndex * 2 + 1, l, mid);
-		long hsum = buildRec(heapIndex * 2 + 2, mid + 1, h);
-		return heap[heapIndex] = lsum + hsum;
+	final Node root;
+
+	public SegmentTree(int... arr) {
+		root = buildTree(arr, 0, arr.length);
 	}
 
-	public long sum(int from, int to) {
-		return sumRec(from, to, 0, 0, arr.length - 1);
+	private Node buildTree(int[] arr, int b, int e) {
+		if (arr.length == 0)
+			return null;
+		if (b + 1 == e)
+			return new Node(null, null, b, e, arr[b]);
+		int m = (b + e) >>> 1;
+		Node l = buildTree(arr, b, m);
+		Node r = buildTree(arr, m, e);
+		return new Node(l, r, b, e, l.sum + r.sum);
 	}
 
-	private long sumRec(int from, int to, int heapIndex, int l, int h) {
-		if (from <= l && h <= to)
-			return heap[heapIndex];
-		if (from > h || l > to)
+	public int sum(int begin, int end) {
+		return sumRec(root, begin, end);
+	}
+
+	private int sumRec(Node root, int begin, int end) {
+		if (root == null || root.end < begin || end < root.begin)
 			return 0;
-		int mid = (l + h) >> 1;
-		long lsum = sumRec(from, to, heapIndex * 2 + 1, l, mid);
-		long rsum = sumRec(from, to, heapIndex * 2 + 2, mid + 1, h);
-		return lsum + rsum;
+		if (begin <= root.begin && root.end <= end)
+			return root.sum;
+		return sumRec(root.left, begin, end) + sumRec(root.right, begin, end);
 	}
 
-	public void update(int i, long value) {
-		updateRec(value - arr[i], i, 0, 0, arr.length - 1);
-		arr[i] = value;
+	public void update(int i, int value) {
+		updateRec(root, i, value);
 	}
 
-	private void updateRec(long diff, int i, int heapIndex, int l, int h) {
-		if (i < l || i > h)
+	private void updateRec(Node root, int i, int value) {
+		if (root.begin == i && i + 1 == root.end)
+			root.sum = value;
+		else if (root.begin <= i && i < root.end) {
+			updateRec(root.left, i, value);
+			updateRec(root.right, i, value);
+			root.sum = root.left.sum + root.right.sum;
+		}
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toStringAsTree(sb, root, 0);
+		return sb.toString();
+	}
+
+	private void toStringAsTree(StringBuilder sb, Node root, int depth) {
+		if (root == null)
 			return;
-		heap[heapIndex] += diff;
-		if (l >= h)
-			return;
-		int mid = (l + h) >> 1;
-		updateRec(diff, i, heapIndex * 2 + 1, l, mid);
-		updateRec(diff, i, heapIndex * 2 + 2, mid + 1, h);
+		for (int i = 0; i < depth; i++)
+			sb.append(' ');
+		String nodeInfo = "[" + root.begin + ", " + root.end + ") sum = " + root.sum;
+		sb.append(nodeInfo).append('\n');
+		toStringAsTree(sb, root.left, depth + 1);
+		toStringAsTree(sb, root.right, depth + 1);
+	}
+
+	public static void main(String[] args) {
+		SegmentTree st = new SegmentTree(1, 3, 5, 7, 9, 11);
+		System.out.println(st);
 	}
 }

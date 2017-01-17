@@ -8,13 +8,13 @@ import org.junit.Test;
 
 public class SegmentTreeTest {
 
-	static final long[] arr = { 1, 3, 5, 7, 9, 11 };
+	static final int[] arr = { 1, 3, 5, 7, 9, 11 };
 	static final int n = 1000;
 	static final Random rand = new Random();
 
-	static long sumBruteForce(int from, int to) {
+	static long sumBruteForce(int begin, int end) {
 		long sum = 0;
-		for (int i = from; i <= to; i++)
+		for (int i = begin; i < end; i++)
 			sum += arr[i];
 		return sum;
 	}
@@ -24,9 +24,8 @@ public class SegmentTreeTest {
 		SegmentTree tree = new SegmentTree(arr);
 
 		for (int i = 0; i < n; i++) {
-			int from = rand.nextInt(arr.length), to = rand.nextInt(arr.length);
-
-			assertEquals(sumBruteForce(from, to), tree.sum(from, to));
+			int begin = rand.nextInt(arr.length), end = rand.nextInt(arr.length);
+			assertEquals(sumBruteForce(begin, end), tree.sum(begin, end));
 		}
 	}
 
@@ -35,11 +34,11 @@ public class SegmentTreeTest {
 		SegmentTree tree = new SegmentTree(arr);
 
 		for (int i = 0; i < n; i++) {
-			tree.update(rand.nextInt(arr.length), rand.nextInt(10));
-
-			int from = rand.nextInt(arr.length), to = rand.nextInt(arr.length);
-
-			assertEquals("sum from " + from + " to " + to, sumBruteForce(from, to), tree.sum(from, to));
+			int index = rand.nextInt(arr.length), val = rand.nextInt(10);
+			tree.update(index, val);
+			arr[index] = val;
+			int begin = rand.nextInt(arr.length), end = rand.nextInt(arr.length);
+			assertEquals("sum [" + begin + ", " + end + ")", sumBruteForce(begin, end), tree.sum(begin, end));
 		}
 	}
 

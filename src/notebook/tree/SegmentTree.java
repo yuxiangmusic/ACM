@@ -32,6 +32,13 @@ public class SegmentTree {
 		return new Node(l, r, b, e, l.sum + r.sum);
 	}
 
+	/**
+	 * @param begin
+	 *            index inclusive
+	 * @param end
+	 *            index exclusive
+	 * @return sum in [begin, end)
+	 */
 	public int sum(int begin, int end) {
 		return sumRec(root, begin, end);
 	}

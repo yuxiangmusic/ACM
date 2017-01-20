@@ -3,7 +3,7 @@ package notebook.combination;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Combination {
+public class CombinationUtil {
 
 	public static void main(String[] args) {
 		Generator g = new Generator(6, 3);

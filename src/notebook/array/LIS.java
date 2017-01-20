@@ -61,9 +61,10 @@ public class LIS {
 			return new int[0];
 		int l[] = new int[arr.length]; // l[i] := length of LIS ending at i
 		int p[] = new int[arr.length]; // p[i] := predecessor of i
-		Arrays.fill(l, 1);
 		int maxIndex = 0; // index of max LIS
-		for (int i = 1; i < arr.length; i++) {
+		for (int i = 0; i < arr.length; i++) {
+			l[i] = 1;
+			p[i] = -1;
 			for (int j = 0; j < i; j++) {
 				if (arr[j] < arr[i] && l[i] < l[j] + 1) {
 					l[i] = l[j] + 1;

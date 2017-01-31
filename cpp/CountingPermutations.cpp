@@ -23,8 +23,8 @@ int solve(int n, int k) {
 	for (int i = 1; i <= n; i++) {
 		for (int j = 1; j <= MIN(k, i * (i-1) / 2); j++) {
 			dp[i][j] += mod + dp[i][j-1] 
-				            + dp[i-1][j] 
-							- (j<i?0:dp[i-1][j-i]);
+				+ dp[i-1][j] 
+				- (j<i?0:dp[i-1][j-i]);
 			dp[i][j] %= mod;
 		}
 	}

@@ -22,51 +22,37 @@ import java.util.Scanner;
  */
 // XXX not yet judged
 public class Blur {
-
 	static int w, h, b;
 	static Frac grid[][];
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-
 		while (sc.hasNext()) {
 			w = sc.nextInt();
 			h = sc.nextInt();
 			b = sc.nextInt();
-
 			grid = new Frac[h][w];
-
-			for (int r = 0; r < h; r++) {
-				for (int c = 0; c < w; c++) {
+			for (int r = 0; r < h; r++)
+				for (int c = 0; c < w; c++)
 					grid[r][c] = new Frac(sc.nextLong(), 1);
-				}
-			}
-
-			for (int i = 0; i < b; i++) {
+			for (int i = 0; i < b; i++)
 				grid = blur(grid);
-			}
-
 			HashSet<Frac> set = new HashSet<>();
-
-			for (Frac[] row : grid) {
+			for (Frac[] row : grid)
 				for (Frac f : row)
 					set.add(f);
-			}
 			System.out.println(set.size());
 		} // end of case
-
 		sc.close();
 	}
 
 	static Frac[][] blur(Frac[][] grid) {
 		Frac[][] blur = new Frac[h][w];
-
 		for (int r = 0; r < h; r++)
 			for (int c = 0; c < w; c++) {
 				// blur (r, c)
 				Frac total = new Frac(0, 1);
-
-				for (int i = r - 1; i <= r + 1; i++)
+				for (int i = r - 1; i <= r + 1; i++) {
 					for (int j = c - 1; j <= c + 1; j++) {
 						int ii = i, jj = j;
 						if (i == -1)
@@ -77,10 +63,9 @@ public class Blur {
 							jj = w - 1;
 						else if (j == w)
 							jj = 0;
-
 						total = add(total, grid[ii][jj]);
 					}
-
+				}
 				Frac avg = div(total, 9);
 				blur[r][c] = avg;
 			}
@@ -130,7 +115,5 @@ public class Blur {
 		public int hashCode() {
 			return (int) (top * 31 + bot);
 		}
-
 	}
-
 }

@@ -14,7 +14,6 @@ public class Factorization {
 	@Test
 	public void test() {
 		long n = Math.abs(rand.nextLong());
-
 		System.out.println("factors of " + n);
 
 		for (long f : factorize(n)) {
@@ -26,7 +25,7 @@ public class Factorization {
 
 	List<Long> factorize(long n) {
 		List<Long> factors = new ArrayList<>();
-		for (long f = 2; f * f < n; f++) { // using (f < n) is significantly slower
+		for (long f = 2; f * f <= n; f++) { // using (f < n) is significantly slower
 			while (n % f == 0) {
 				factors.add(f);
 				n /= f;

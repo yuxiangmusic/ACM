@@ -1,16 +1,17 @@
 package notebook.prime;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PrimeUtil {
 
 	public static void main(String[] args) {
-		Generator g = new Generator(100);
+		Generator g = new Generator(1500000);
 		System.out.println(g.primeList);
 	}
 
 	static class Generator {
-		final ArrayList<Long> primeList = new ArrayList<>();
+		final List<Long> primeList = new LinkedList<>();
 
 		Generator(long n) {
 			for (long i = 2; i < n; i++)

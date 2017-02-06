@@ -9,7 +9,7 @@ import java.util.Queue;
 public class Combinations {
 
 	public static void main(String[] args) {
-		System.out.println(combinations(3, 2));
+		System.out.println(combinations(4, 2));
 	}
 
 	/**

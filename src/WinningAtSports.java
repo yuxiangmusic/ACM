@@ -51,7 +51,7 @@ public class WinningAtSports {
 	static final int mod = 1000000007;
 
 	public static int stressfree(int a, int b) {
-		int[][] dp = new int[a + 1][b + 1]; // DP[i][j] := number of ways achieve i-j victory
+		int[][] dp = new int[a + 1][b + 1]; // DP[i][j] := number of ways to achieve i-j victory
 		for (int i = 1; i <= a; i++)
 			dp[i][0] = 1;
 		for (int i = 1; i <= a; i++)
@@ -61,7 +61,7 @@ public class WinningAtSports {
 	}
 
 	public static int stressful(int a, int b) {
-		int[][] dp = new int[b + 1][b + 1]; // DP[i][j] := number of ways achieve i-j victory
+		int[][] dp = new int[b + 1][b + 1]; // DP[i][j] := number of ways to achieve i-j victory
 		for (int j = 1; j <= b; j++)
 			dp[0][j] = 1;
 		for (int i = 1; i <= b; i++)

@@ -1,22 +1,26 @@
 package notebook.string;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.DecimalFormat;
+
+import org.junit.Test;
 
 public class FormatTest {
 
-	public static void main(String[] args) {
+	@Test
+	public void test() {
 		// rounded to 4th
-		System.out.println(String.format("%.4f", 0.12345));
+		assertEquals("0.1235", String.format("%.4f", 0.12345));
 
 		// add 0's to end
-		System.out.println(String.format("%.4f", 0.1));
+		assertEquals("0.1000", String.format("%.4f", 0.1));
 
 		// add 0's to begin
-		System.out.println(String.format("%04d", 12));
+		assertEquals("0012", String.format("%04d", 12));
 
 		// rounded
-		DecimalFormat df = new DecimalFormat("00.00");
-		System.out.println(df.format(0.135));
+		assertEquals("00.14", new DecimalFormat("00.00").format(0.135));
 	}
 
 }

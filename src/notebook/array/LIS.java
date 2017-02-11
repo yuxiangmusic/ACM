@@ -8,14 +8,14 @@ public class LIS {
 		int[] arr = ArrayUtil.getRandomArray(1000);
 		{
 			long begin = System.nanoTime();
-			int[] lis = getLIS(arr);
+			int[] lis = getLIS_log(arr);
 			System.out.println(Arrays.toString(lis));
 			System.out.println("LIS length = " + lis.length);
 			System.out.println("Runtime: " + (System.nanoTime() - begin));
 		}
 		{
 			long begin = System.nanoTime();
-			int[] lis = getLISClassic(arr);
+			int[] lis = getLIS_quadratic(arr);
 			System.out.println(Arrays.toString(lis));
 			System.out.println("LIS length = " + lis.length);
 			System.out.println("Runtime: " + (System.nanoTime() - begin));
@@ -23,7 +23,7 @@ public class LIS {
 	}
 
 	// O(n*log(n)) DP solution
-	public static int[] getLIS(int[] arr) {
+	public static int[] getLIS_log(int[] arr) {
 		if (arr.length == 0)
 			return new int[0];
 		int length = 0, dp[] = new int[arr.length];
@@ -55,8 +55,8 @@ public class LIS {
 		return lis;
 	}
 
-	@Deprecated // classic DP solution O(n^2)
-	public static int[] getLISClassic(int[] arr) {
+	// classic DP solution O(n^2)
+	public static int[] getLIS_quadratic(int[] arr) {
 		if (arr.length == 0)
 			return new int[0];
 		int l[] = new int[arr.length]; // l[i] := length of LIS ending at i
@@ -80,5 +80,21 @@ public class LIS {
 			arrIndex = p[arrIndex];
 		}
 		return lis;
+	}
+
+	public static int lenLIS_quadratic(int[] arr) {
+		if (arr.length == 0)
+			return 0;
+		int l[] = new int[arr.length]; // l[i] := length of LIS ending at i
+		int max = 0; // index of max LIS
+		for (int i = 0; i < arr.length; i++) {
+			l[i] = 1;
+			for (int j = 0; j < i; j++)
+				if (arr[j] < arr[i] && l[i] < l[j] + 1)
+					l[i] = l[j] + 1;
+			if (l[i] > max)
+				max = l[i];
+		}
+		return max;
 	}
 }

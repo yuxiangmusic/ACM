@@ -29,4 +29,12 @@ public class Combinations {
 		return new ArrayList<>(q);
 	}
 
+	public static long choose(int n, int k) {
+		long ans = 1;
+		for (int i = 0; i < k; i++) {
+			ans *= (n - i);
+			ans /= (1 + i);
+		}
+		return ans;
+	}
 }

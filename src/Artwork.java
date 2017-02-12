@@ -63,8 +63,7 @@ public class Artwork {
 			List<int[]> stroke = new ArrayList<>();
 			int x1 = input[i][0], y1 = input[i][1], x2 = input[i][2], y2 = input[i][3];
 			if (x1 == x2) {
-				int stepy = y2 == y1 ? 1 : (y2 - y1) / Math.abs(y2 - y1);
-				for (int y = y1; y <= y2; y += stepy) {
+				for (int y = y1; y <= y2; y++) {
 					int r = x1 - 1, c = y - 1;
 					if (grid[r][c] == 0) {
 						grid[r][c] = 1;
@@ -72,8 +71,7 @@ public class Artwork {
 					}
 				}
 			} else {
-				int stepx = x2 == x1 ? 1 : (x2 - x1) / Math.abs(x2 - x1);
-				for (int x = x1; x <= x2; x += stepx) {
+				for (int x = x1; x <= x2; x++) {
 					int r = x - 1, c = y1 - 1;
 					if (grid[r][c] == 0) {
 						grid[r][c] = 1;

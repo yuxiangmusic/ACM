@@ -34,7 +34,7 @@ public class DaydreamingStockbroker {
 		sc.close();
 	}
 
-	static long solve(int... arr) {
+	public static long solve(int... arr) {
 		long money = 100;
 		for (int i = 0; i < arr.length - 1; i++) {
 			long buyprice = arr[i], sellprice = arr[i + 1];

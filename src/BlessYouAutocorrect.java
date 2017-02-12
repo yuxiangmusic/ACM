@@ -95,7 +95,6 @@ public class BlessYouAutocorrect {
 					cur.children[c - 'a'] = new TrieNode(cur.depth + 1, cur);
 				cur = cur.children[c - 'a'];
 			}
-			cur.end = true;
 			TrieNode end = cur;
 			cur = root;
 			for (char c : word.toCharArray()) {
@@ -135,7 +134,6 @@ public class BlessYouAutocorrect {
 	}
 
 	static class TrieNode {
-		boolean end;
 		int dist, depth; // storing word in TrieNode can cause MLE
 		/**
 		 * [0...25] := letters [26] := tab [27] := parent (back edge)

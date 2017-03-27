@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class ArrayUtil {
 
-	static Random rand = new Random();
+	static final Random rand = new Random();
 
 	public static int[] getRandomArray(int size) {
 		return getRandomArray(0, size, size);

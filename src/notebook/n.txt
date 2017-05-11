@@ -24,38 +24,133 @@ public static int partition(int[] arr, int l, int h) {
 }
 
 // src/notebook/array/LargestRectangleInHistogram.java
-public static int max(int[] h) {
-    int stack[] = new int[h.length], size = 0, max = 0;
-    for (int i = 0; i < h.length; i++) {
-        if (size == 0 || h[stack[size - 1]] < h[i])
-            stack[size++] = i;
-        while (size > 0 && h[stack[size - 1]] >= h[i])
-            max = Math.max(max, h[stack[--size]] * (i - (size == 0 ? 0 : stack[size - 1] + 1)));
+public static int largestRectangleArea(int[] h) {
+    int n = h.length, stack[] = new int[n], size = 0, max = 0;
+    if (n == 0)
+        return 0;
+    for (int i = 0; i <= n; i++) {
+        while (size > 0 && (i == n || h[stack[size - 1]] >= h[i]))
+            max = Math.max(max, h[stack[--size]] * (i - (size == 0 ? 0 : 1 + stack[size - 1])));
         stack[size++] = i;
     }
-    while (size > 0)
-        max = Math.max(max, h[stack[--size]] * (h.length - (size == 0 ? 0 : stack[size - 1] + 1)));
     return max;
 }
 
-// src/notebook/array/LIS.java
+// src/notebook/array/LongestIncreasingSubsequence.java
 /**
- * @return length of the LIS
+ * O(n*log(n)) DP solution
  */
-public static int lenLIS_quadratic(int[] arr) {
+public static int[] getLIS_log(int... arr) {
     if (arr.length == 0)
-        return 0;
+        return new int[0];
+    int len = 0, dp[] = new int[arr.length];
+    int p[] = new int[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+        int l = 0, h = len - 1;
+        while (l <= h) {
+            int mid = (l + h) >>> 1;
+            if (arr[dp[mid]] == arr[i]) {
+                l = mid;
+                break;
+            } else if (arr[dp[mid]] < arr[i]) {
+                l = mid + 1;
+            } else {
+                h = mid - 1;
+            }
+        }
+        dp[l] = i;
+        if (len == l)
+            len++;
+        if (l > 0)
+            p[i] = dp[l - 1];
+    }
+    int lis[] = new int[len], arrIndex = dp[len - 1];
+    for (int i = len - 1; i >= 0; i--) {
+        lis[i] = arr[arrIndex]; // or we can return indexes
+        arrIndex = p[arrIndex];
+    }
+    return lis;
+}
+
+// src/notebook/array/LongestIncreasingSubsequence.java
+/**
+ * classic DP solution O(n^2)
+ */
+public static int[] getLIS_quadratic(int... arr) {
+    if (arr.length == 0)
+        return new int[0];
     int l[] = new int[arr.length]; // l[i] := length of LIS ending at i
-    int max = 0; // index of max LIS
+    int p[] = new int[arr.length]; // p[i] := predecessor of i
+    int maxIndex = 0; // index of max LIS
     for (int i = 0; i < arr.length; i++) {
         l[i] = 1;
-        for (int j = 0; j < i; j++)
-            if (arr[j] < arr[i] && l[i] < l[j] + 1)
+        p[i] = -1;
+        for (int j = 0; j < i; j++) {
+            if (arr[j] < arr[i] && l[i] < l[j] + 1) {
                 l[i] = l[j] + 1;
-        if (l[i] > max)
-            max = l[i];
+                p[i] = j;
+            }
+        }
+        if (l[i] > l[maxIndex])
+            maxIndex = i;
+    }
+    int lis[] = new int[l[maxIndex]], arrIndex = maxIndex;
+    for (int i = lis.length - 1; i >= 0; i--) {
+        lis[i] = arr[arrIndex]; // or we can return indexes
+        arrIndex = p[arrIndex];
+    }
+    return lis;
+}
+
+// src/notebook/array/LongestIncreasingSubsequence.java
+/**
+ * @return length of LIS
+ */
+public static int lenLIS_log(int... arr) {
+    // DP[i] := smallest tail of LIS of length (i + 1)
+    int[] dp = new int[arr.length];
+    int len = 0; // effective length of DP
+    for (int n : arr) {
+        int i = Arrays.binarySearch(dp, 0, len, n);
+        if (i < 0)
+            i = ~i;
+        dp[i] = n;
+        if (i == len)
+            len++;
+    }
+    return len;
+}
+
+// src/notebook/array/LongestIncreasingSubsequence.java
+/**
+ * @return length of LIS
+ */
+public static int lenLIS_quadratic(int... arr) {
+    if (arr.length == 0)
+        return 0;
+    // DP[i] := length of LIS ending at i
+    int dp[] = new int[arr.length];
+    int max = 0;
+    for (int i = 0; i < arr.length; i++) {
+        dp[i] = 1;
+        for (int j = 0; j < i; j++)
+            if (arr[j] < arr[i])
+                dp[i] = Math.max(dp[i], 1 + dp[j]);
+        max = Math.max(max, dp[i]);
     }
     return max;
+}
+
+// src/notebook/bit/GrayCode.java
+public static int toBinary(int n) {
+    for (int m = n >> 1; m != 0; m >>= 1)
+        n = n ^ m;
+    return n;
+}
+
+// src/notebook/bit/GrayCode.java
+public static int toGrayCode(int n) {
+    return n ^ (n >> 1);
 }
 
 // src/notebook/bit/MaximumXOR.java
@@ -112,32 +207,44 @@ public static long choose(int n, int k) {
     return ans;
 }
 
-// src/notebook/gcd/CRT.java
+// src/notebook/gcd/ChineseRemainderTheorem.java
 /**
- * @return n (mod rs) such that n == a (mod r) and n == b (mod s)
+ * @return n (MOD r*s) such that n == a (MOD r) and n == b (MOD s)
  */
-public static long crt(long r, long s, long a, long b) {
-    long[] ans = ExtendedEuclid.gcd(r, s);
+public static long getN(long r, long s, long a, long b) {
+    ExtendedEuclid ans = ExtendedEuclid.gcd(r, s);
 
-    if (Math.abs(ans[0]) != 1)
+    if (Math.abs(ans.gcd) != 1)
         throw new IllegalArgumentException("gcd(r, s) must be 1");
 
-    long n = b * r * ans[1] + a * s * ans[2], rs = r * s;
+    long n = b * r * ans.x + a * s * ans.y, rs = r * s;
 
-    return (n % rs + rs) % rs; // least positive n (mod rs)
+    return (n % rs + rs) % rs; // least positive n (MOD r*s)
 }
 
 // src/notebook/gcd/ExtendedEuclid.java
 /**
- * @return GCD(a, b) = ax + by where [0] = GCD, [1] = x, [2] = y
+ * @return GCD(a, b) = ax + by
  */
-public static long[] gcd(long a, long b) {
-    if (b == 0)
-        return new long[] { a, 1, 0 };
-    long[] ans = gcd(b, a % b);
-    long x = ans[1], y = ans[2], q = a / b;
-    ans[1] = y;
-    ans[2] = x - y * q;
+public static ExtendedEuclid gcd(long a, long b) {
+    ExtendedEuclid ans = new ExtendedEuclid();
+    if (b == 0) {
+        ans.gcd = a;
+        ans.a = a;
+        ans.b = b;
+        ans.x = 1;
+        ans.y = 0;
+        return ans;
+    }
+    ans = gcd(b, a % b);
+    long x = ans.x, y = ans.y, q = a / b;
+
+    ans.gcd = ans.gcd;
+    ans.a = a;
+    ans.b = b;
+    ans.x = y;
+    ans.y = x - y * q;
+
     return ans;
 }
 
@@ -203,7 +310,7 @@ public static int detect(ListNode head) {
 
 // src/notebook/math/Fibonacci.java
 /**
- * Calculates correct result update to n = 70
+ * Calculates correct result up to n = 70
  */
 public static long fib_math(int n) {
     double sqrt5 = Math.sqrt(5), golden = (1 + sqrt5) / 2;

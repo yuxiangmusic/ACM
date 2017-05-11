@@ -67,7 +67,7 @@ public class CardHandSorting {
 	}
 
 	/**
-	 * @see notebook.array.LIS
+	 * @see notebook.array.LongestIncreasingSubsequence
 	 */
 	private static int lenLIS(String[] arr, Comparator<String> comp) {
 		if (arr.length == 0)

@@ -11,7 +11,7 @@ import notebook.Notebook;
 
 /**
  * Given a list of numbers, a[0], a[1], a[2], … , a[N-1], <br>
- * where 0 <= a[i] < 2^32. Find the maximum result of a[i] XOR a[j].
+ * where 0 <= a[i] < (1 << 31). Find the maximum result of a[i] XOR a[j].
  * 
  * Could you do this in O(n) runtime?
  * 

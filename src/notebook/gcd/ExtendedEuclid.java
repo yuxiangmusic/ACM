@@ -4,23 +4,36 @@ import notebook.Notebook;
 
 public class ExtendedEuclid {
 	/**
-	 * @return GCD(a, b) = ax + by where [0] = GCD, [1] = x, [2] = y
+	 * @return GCD(a, b) = ax + by
 	 */
 	@Notebook
-	public static long[] gcd(long a, long b) {
-		if (b == 0)
-			return new long[] { a, 1, 0 };
-		long[] ans = gcd(b, a % b);
-		long x = ans[1], y = ans[2], q = a / b;
-		ans[1] = y;
-		ans[2] = x - y * q;
+	public static ExtendedEuclid gcd(long a, long b) {
+		ExtendedEuclid ans = new ExtendedEuclid();
+		if (b == 0) {
+			ans.gcd = a;
+			ans.a = a;
+			ans.b = b;
+			ans.x = 1;
+			ans.y = 0;
+			return ans;
+		}
+		ans = gcd(b, a % b);
+		long x = ans.x, y = ans.y, q = a / b;
+
+		ans.gcd = ans.gcd;
+		ans.a = a;
+		ans.b = b;
+		ans.x = y;
+		ans.y = x - y * q;
+
 		return ans;
 	}
 
-	public static void main(String[] args) {
-		long a = 1027, b = 712;
-		long[] ans = gcd(a, b);
-		System.out.printf("%d = %d * %d + %d * %d", ans[0], a, ans[1], b, ans[2]);
+	public long gcd, a, x, b, y;
+
+	@Override
+	public String toString() {
+		return String.format("%d = %d * %d + %d * %d", gcd, a, x, b, y);
 	}
 
 }

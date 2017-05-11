@@ -10,7 +10,7 @@ public class SubsetSum {
 
 	@Test
 	public void test() {
-		assertEquals(2, subsetSum(new int[] { 1, 2, 3 }, 3));
+		assertEquals(4, subsetSum(new int[] { 1, 2, 3, 4, 5, 6 }, 7));
 	}
 
 	/**

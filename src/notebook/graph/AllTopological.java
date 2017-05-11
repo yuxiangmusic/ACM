@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Finds all possible solutions of topological sort
- */
 public class AllTopological {
 
+	/**
+	 * Finds all possible solutions of topological sort
+	 */
 	public static List<List<Node>> sortBFS(Graph g) {
 		List<List<Node>> all = new ArrayList<>();
 		List<Node> fromList = new LinkedList<>();
@@ -24,6 +24,9 @@ public class AllTopological {
 		return all;
 	}
 
+	/**
+	 * Helper method for {@link #sortBFS(Graph)}
+	 */
 	static void rec(List<List<Node>> all, List<Node> fromList, List<Node> sortList, HashMap<Node, Integer> in) {
 		if (fromList.isEmpty())
 			all.add(sortList);

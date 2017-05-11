@@ -1,0 +1,455 @@
+// src/notebook/array/ArrayUtil.java
+public static int kthLargest(int[] arr, int k) {
+    int l = 0, h = arr.length - 1;
+    while (l <= h) {
+        int p = partition(arr, l, h);
+        int rank = arr.length - p;
+        if (rank == k)
+            return arr[p];
+        else if (rank > k)
+            l = p + 1;
+        else
+            h = p - 1;
+    }
+    return -1;
+}
+
+// src/notebook/array/ArrayUtil.java
+public static int partition(int[] arr, int l, int h) {
+    for (int i = l; i < h; i++)
+        if (arr[i] < arr[h])
+            swap(arr, i, l++);
+    swap(arr, l, h);
+    return l;
+}
+
+// src/notebook/array/LargestRectangleInHistogram.java
+public static int max(int[] h) {
+    int stack[] = new int[h.length], size = 0, max = 0;
+    for (int i = 0; i < h.length; i++) {
+        if (size == 0 || h[stack[size - 1]] < h[i])
+            stack[size++] = i;
+        while (size > 0 && h[stack[size - 1]] >= h[i])
+            max = Math.max(max, h[stack[--size]] * (i - (size == 0 ? 0 : stack[size - 1] + 1)));
+        stack[size++] = i;
+    }
+    while (size > 0)
+        max = Math.max(max, h[stack[--size]] * (h.length - (size == 0 ? 0 : stack[size - 1] + 1)));
+    return max;
+}
+
+// src/notebook/array/LIS.java
+/**
+ * @return length of the LIS
+ */
+public static int lenLIS_quadratic(int[] arr) {
+    if (arr.length == 0)
+        return 0;
+    int l[] = new int[arr.length]; // l[i] := length of LIS ending at i
+    int max = 0; // index of max LIS
+    for (int i = 0; i < arr.length; i++) {
+        l[i] = 1;
+        for (int j = 0; j < i; j++)
+            if (arr[j] < arr[i] && l[i] < l[j] + 1)
+                l[i] = l[j] + 1;
+        if (l[i] > max)
+            max = l[i];
+    }
+    return max;
+}
+
+// src/notebook/bit/MaximumXOR.java
+/**
+ * @return maximum XOR of two numbers
+ */
+public int findMaximumXOR(int[] nums) {
+    int max = 0, mask = 0;
+    for (int i = 30; i >= 0; i--) {
+        int m = 1 << i;
+        mask |= m;
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num & mask);
+        }
+        // test if i'th bit of max can be set, given LHS bits
+        int tmp = max | m;
+        for (int prefix : set) {
+            // there exist prefix x and y such that (x ^ y) = (max | m)
+            if (set.contains(tmp ^ prefix)) {
+                max = tmp;
+                break;
+            }
+        }
+    }
+    return max;
+}
+
+// src/notebook/combination/Combinations.java
+/**
+ * @return all k-combinations of [0...n-1]
+ */
+public static List<List<Integer>> combinations(int n, int k) {
+    Queue<List<Integer>> q = new LinkedList<>(Arrays.asList(new ArrayList<>()));
+    while (q.peek().size() < k) {
+        List<Integer> l = q.poll();
+        int last = l.isEmpty() ? -1 : l.get(l.size() - 1);
+        for (int i = last + 1; i <= n - k + l.size(); i++) {
+            List<Integer> copy = new ArrayList<>(l);
+            copy.add(i);
+            q.offer(copy);
+        }
+    }
+    return new ArrayList<>(q);
+}
+
+// src/notebook/combination/Combinations.java
+public static long choose(int n, int k) {
+    long ans = 1;
+    for (int i = 0; i < k; i++) {
+        ans *= (n - i);
+        ans /= (1 + i);
+    }
+    return ans;
+}
+
+// src/notebook/gcd/CRT.java
+/**
+ * @return n (mod rs) such that n == a (mod r) and n == b (mod s)
+ */
+public static long crt(long r, long s, long a, long b) {
+    long[] ans = ExtendedEuclid.gcd(r, s);
+
+    if (Math.abs(ans[0]) != 1)
+        throw new IllegalArgumentException("gcd(r, s) must be 1");
+
+    long n = b * r * ans[1] + a * s * ans[2], rs = r * s;
+
+    return (n % rs + rs) % rs; // least positive n (mod rs)
+}
+
+// src/notebook/gcd/ExtendedEuclid.java
+/**
+ * @return GCD(a, b) = ax + by where [0] = GCD, [1] = x, [2] = y
+ */
+public static long[] gcd(long a, long b) {
+    if (b == 0)
+        return new long[] { a, 1, 0 };
+    long[] ans = gcd(b, a % b);
+    long x = ans[1], y = ans[2], q = a / b;
+    ans[1] = y;
+    ans[2] = x - y * q;
+    return ans;
+}
+
+// src/notebook/gcd/GCD.java
+public static long gcd_rec(long a, long b) {
+    // add Math.abs when necessary
+    return b == 0 ? a : gcd_rec(b, a % b);
+}
+
+// src/notebook/gcd/GCD.java
+public static long gcd_itr(long a, long b) {
+    // add Math.abs when necessary
+    long r;
+    while (b != 0) {
+        r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+// src/notebook/interval/MergeIntervals.java
+public static List<Interval> merge(List<Interval> intervals) {
+    if (intervals.size() <= 1)
+        return intervals;
+    Collections.sort(intervals, (a, b) -> a.start - b.start);
+    List<Interval> list = new LinkedList<>();
+    int start = intervals.get(0).start, end = intervals.get(0).end;
+    for (Interval i : intervals) {
+        if (i.start <= end)
+            end = Math.max(end, i.end); // next interval could be inside previous interval
+        else {
+            // previous merge complete
+            list.add(new Interval(start, end));
+            // next merge
+            start = i.start;
+            end = i.end;
+        }
+    }
+    list.add(new Interval(start, end));
+    return list;
+}
+
+// src/notebook/list/CycleDection.java
+/**
+ * @return index where cycle starts
+ */
+public static int detect(ListNode head) {
+    ListNode slow = head.next, fast = slow.next;
+    while (fast != slow) {
+        fast = fast.next.next;
+        slow = slow.next;
+    }
+    int index = 0;
+    fast = head;
+    while (fast != slow) {
+        fast = fast.next;
+        slow = slow.next;
+        index++;
+    }
+    return index;
+}
+
+// src/notebook/math/Fibonacci.java
+/**
+ * Calculates correct result update to n = 70
+ */
+public static long fib_math(int n) {
+    double sqrt5 = Math.sqrt(5), golden = (1 + sqrt5) / 2;
+    return (long) Math.round(Math.pow(golden, n) / sqrt5);
+}
+
+// src/notebook/permutation/Permutations.java
+/**
+ * @return all k-permutations of [0...n-1]
+ */
+public static List<List<Integer>> permutations(int n, int k) {
+    Queue<List<Integer>> q = new LinkedList<>(Arrays.asList(new ArrayList<>()));
+    Queue<List<Integer>> r = new LinkedList<>(Arrays.asList(new ArrayList<>()));
+    for (int i = 0; i < n; i++)
+        r.peek().add(i);
+    while (q.peek().size() < k) {
+        List<Integer> qq = q.poll();
+        List<Integer> rr = r.poll();
+        for (int i = 0; i < rr.size(); i++) {
+            List<Integer> copyqq = new ArrayList<>(qq);
+            List<Integer> copyrr = new ArrayList<>(rr);
+            copyqq.add(copyrr.remove(i));
+            q.offer(copyqq);
+            r.offer(copyrr);
+        }
+    }
+    return new ArrayList<>(q);
+}
+
+// src/notebook/prime/Factorization.java
+public static List<Long> factorize(long n) {
+    List<Long> factors = new ArrayList<>();
+    for (long f = 2; f * f <= n; f++) { // using (f < n) is slower
+        while (n % f == 0) {
+            factors.add(f);
+            n /= f;
+        }
+    }
+    if (n > 1)
+        factors.add(n);
+    return factors;
+}
+
+// src/notebook/prime/PrimeUtil.java
+public static List<Integer> primes(int n) {
+    List<Integer> primes = new ArrayList<>();
+    boolean[] isComposite = new boolean[n];
+    for (int i = 2; i < n; i++) {
+        if (!isComposite[i]) {
+            primes.add(i);
+            for (int j = 2; i * j < n; j++)
+                isComposite[i * j] = true;
+        }
+    }
+    return primes;
+}
+
+// src/notebook/search/SearchUtil.java
+public static int binarySearchBiasL(int[] arr, int key) {
+    int l = -1, h = arr.length - 1;
+    while (l < h - 1) {
+        int m = (l + h) >>> 1;
+        if (arr[m] >= key)
+            h = m;
+        else
+            l = m;
+    }
+    return h;
+
+}
+
+// src/notebook/search/SearchUtil.java
+public static int binarySearchBiasR(int[] arr, int key) {
+    int l = 0, h = arr.length;
+    while (l < h - 1) {
+        int m = (l + h) >>> 1;
+        if (arr[m] <= key)
+            l = m;
+        else
+            h = m;
+    }
+    return l;
+}
+
+// src/notebook/set/Subsets.java
+public static List<List<Integer>> subsets(int... nums) {
+    List<List<Integer>> subsets = new ArrayList<>(Arrays.asList(new ArrayList<>()));
+    for (int i = 0, size = subsets.size(); i < nums.length; i++, size = subsets.size()) {
+        for (int j = 0; j < size; j++) {
+            List<Integer> l = new ArrayList<>(subsets.get(j));
+            l.add(nums[i]);
+            subsets.add(l);
+        }
+    }
+    return subsets;
+}
+
+// src/notebook/set/Subsets.java
+/**
+ * The given set may contain duplicates. <br>
+ * The solution must not contain duplicates.
+ */
+public static List<List<Integer>> subsetsWithDup(int... nums) {
+    Arrays.sort(nums);
+    List<List<Integer>> subsets = new ArrayList<>(Arrays.asList(new ArrayList<>()));
+    for (int i = 0, presize = 0, cursize = subsets
+            .size(); i < nums.length; i++, presize = cursize, cursize = subsets.size()) {
+        for (int j = i == 0 || nums[i] != nums[i - 1] ? 0 : presize; j < cursize; j++) {
+            List<Integer> subset = new ArrayList<>(subsets.get(j));
+            subset.add(nums[i]);
+            subsets.add(subset);
+        }
+    }
+    return subsets;
+}
+
+// src/notebook/set/SubsetSum.java
+/**
+ * @return number of subsets whose sum is k
+ */
+public int subsetSum(int[] nums, int k) {
+    int[] dp = new int[k + 1];
+    dp[0] = 1;
+    for (int n : nums)
+        for (int i = k; i >= n; i--)
+            dp[i] += dp[i - n];
+    return dp[k];
+}
+
+// src/notebook/string/EditDistance.java
+public static int minDistance(String s, String t) {
+    int m = s.length();
+    int n = t.length();
+    int[][] dp = new int[m + 1][n + 1];
+    for (int i = 0; i <= m; i++)
+        dp[i][0] = i;
+    for (int j = 0; j <= n; j++)
+        dp[0][j] = j;
+    for (int i = 1; i <= m; i++)
+        for (int j = 1; j <= n; j++)
+            if (s.charAt(i - 1) == t.charAt(j - 1))
+                dp[i][j] = dp[i - 1][j - 1];
+            else
+                dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1]));
+    return dp[m][n];
+}
+
+// src/notebook/string/FormatTest.java
+@Test
+public void test() {
+    // rounded to 4th
+    assertEquals("0.1235", String.format("%.4f", 0.12345));
+
+    // add 0's to end
+    assertEquals("0.1000", String.format("%.4f", 0.1));
+
+    // add 0's to begin
+    assertEquals("0012", String.format("%04d", 12));
+
+    // rounded
+    assertEquals("00.14", new DecimalFormat("00.00").format(0.135));
+}
+
+// src/notebook/tree/SegmentTree.java
+public class SegmentTree {
+
+    final class Node {
+        Node left, right;
+        int begin, end, sum;
+
+        Node(Node left, Node right, int begin, int end, int sum) {
+            this.left = left;
+            this.right = right;
+            this.begin = begin;
+            this.end = end;
+            this.sum = sum;
+        }
+    }
+
+    final Node root;
+
+    public SegmentTree(int... arr) {
+        root = buildTree(arr, 0, arr.length);
+    }
+
+    private Node buildTree(int[] arr, int b, int e) {
+        if (arr.length == 0)
+            return null;
+        if (b + 1 == e)
+            return new Node(null, null, b, e, arr[b]);
+        int m = (b + e) >>> 1;
+        Node l = buildTree(arr, b, m);
+        Node r = buildTree(arr, m, e);
+        return new Node(l, r, b, e, l.sum + r.sum);
+    }
+
+    /**
+     * @param begin
+     *            index inclusive
+     * @param end
+     *            index exclusive
+     * @return sum in [begin, end)
+     */
+    public int sum(int begin, int end) {
+        return sumRec(root, begin, end);
+    }
+
+    private int sumRec(Node root, int begin, int end) {
+        if (root == null || root.end < begin || end < root.begin)
+            return 0;
+        if (begin <= root.begin && root.end <= end)
+            return root.sum;
+        return sumRec(root.left, begin, end) + sumRec(root.right, begin, end);
+    }
+
+    public void update(int i, int value) {
+        updateRec(root, i, value);
+    }
+
+    private void updateRec(Node root, int i, int value) {
+        if (root.begin == i && i + 1 == root.end)
+            root.sum = value;
+        else if (root.begin <= i && i < root.end) {
+            updateRec(root.left, i, value);
+            updateRec(root.right, i, value);
+            root.sum = root.left.sum + root.right.sum;
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        toStringAsTree(sb, root, 0);
+        return sb.toString();
+    }
+
+    private void toStringAsTree(StringBuilder sb, Node root, int depth) {
+        if (root == null)
+            return;
+        for (int i = 0; i < depth; i++)
+            sb.append(' ');
+        String nodeInfo = "[" + root.begin + ", " + root.end + ") sum = " + root.sum;
+        sb.append(nodeInfo).append('\n');
+        toStringAsTree(sb, root.left, depth + 1);
+        toStringAsTree(sb, root.right, depth + 1);
+    }
+
+}
+

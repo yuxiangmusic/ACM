@@ -13,6 +13,8 @@ public class Subsets {
 	}
 
 	/**
+	 * This should only work for small set
+	 * 
 	 * @see notebook.set.Subsets
 	 */
 	public static List<List<Object>> subsets(Object... arr) {

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import notebook.Notebook;
+
 public class MergeIntervals {
 	public static void main(String[] args) {
 		List<Interval> list = new ArrayList<>();
@@ -16,6 +18,7 @@ public class MergeIntervals {
 		System.out.println(merge);
 	}
 
+	@Notebook
 	public static List<Interval> merge(List<Interval> intervals) {
 		if (intervals.size() <= 1)
 			return intervals;

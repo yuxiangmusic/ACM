@@ -42,4 +42,10 @@ public class SegmentTreeTest {
 		}
 	}
 
+	@Test
+	public void test() {
+		SegmentTree st = new SegmentTree(1, 3, 5, 7, 9, 11);
+		System.out.println(st);
+	}
+
 }

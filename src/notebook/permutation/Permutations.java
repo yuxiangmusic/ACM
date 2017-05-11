@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import notebook.Notebook;
+
 public class Permutations {
 
 	public static void main(String[] args) {
@@ -15,6 +17,7 @@ public class Permutations {
 	/**
 	 * @return all k-permutations of [0...n-1]
 	 */
+	@Notebook
 	public static List<List<Integer>> permutations(int n, int k) {
 		Queue<List<Integer>> q = new LinkedList<>(Arrays.asList(new ArrayList<>()));
 		Queue<List<Integer>> r = new LinkedList<>(Arrays.asList(new ArrayList<>()));

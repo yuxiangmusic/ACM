@@ -2,6 +2,8 @@ package notebook.array;
 
 import java.util.Arrays;
 
+import notebook.Notebook;
+
 public class LIS {
 
 	public static void main(String[] args) {
@@ -49,7 +51,8 @@ public class LIS {
 		}
 		int lis[] = new int[length], arrIndex = dp[length - 1];
 		for (int i = length - 1; i >= 0; i--) {
-			lis[i] = arr[arrIndex]; // arrIndex; // uncomment if we want indexes of LIS
+			lis[i] = arr[arrIndex]; // arrIndex; // uncomment if we want indexes
+									// of LIS
 			arrIndex = p[arrIndex];
 		}
 		return lis;
@@ -82,6 +85,10 @@ public class LIS {
 		return lis;
 	}
 
+	/**
+	 * @return length of the LIS
+	 */
+	@Notebook
 	public static int lenLIS_quadratic(int[] arr) {
 		if (arr.length == 0)
 			return 0;

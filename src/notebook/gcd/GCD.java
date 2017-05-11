@@ -1,13 +1,18 @@
 package notebook.gcd;
 
+import notebook.Notebook;
+
 public class GCD {
 
-	// add Math.abs when necessary
+	@Notebook
 	public static long gcd_rec(long a, long b) {
+		// add Math.abs when necessary
 		return b == 0 ? a : gcd_rec(b, a % b);
 	}
 
+	@Notebook
 	public static long gcd_itr(long a, long b) {
+		// add Math.abs when necessary
 		long r;
 		while (b != 0) {
 			r = a % b;

@@ -2,6 +2,8 @@ package notebook.math;
 
 import org.junit.Test;
 
+import notebook.Notebook;
+
 public class Fibonacci {
 
 	@Test
@@ -32,6 +34,10 @@ public class Fibonacci {
 		return dp[n];
 	}
 
+	/**
+	 * Calculates correct result up to n = 70
+	 */
+	@Notebook
 	public static long fib_math(int n) {
 		double sqrt5 = Math.sqrt(5), golden = (1 + sqrt5) / 2;
 		return (long) Math.round(Math.pow(golden, n) / sqrt5);

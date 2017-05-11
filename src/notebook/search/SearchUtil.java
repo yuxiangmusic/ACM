@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import notebook.Notebook;
+
 public class SearchUtil {
 
 	@Test
@@ -26,6 +28,7 @@ public class SearchUtil {
 		assertEquals(14, binarySearchBiasR(arr, 5));
 	}
 
+	@Notebook
 	public static int binarySearchBiasL(int[] arr, int key) {
 		int l = -1, h = arr.length - 1;
 		while (l < h - 1) {
@@ -39,6 +42,7 @@ public class SearchUtil {
 
 	}
 
+	@Notebook
 	public static int binarySearchBiasR(int[] arr, int key) {
 		int l = 0, h = arr.length;
 		while (l < h - 1) {

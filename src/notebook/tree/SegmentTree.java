@@ -1,5 +1,8 @@
 package notebook.tree;
 
+import notebook.Notebook;
+
+@Notebook
 public class SegmentTree {
 
 	final class Node {
@@ -83,8 +86,4 @@ public class SegmentTree {
 		toStringAsTree(sb, root.right, depth + 1);
 	}
 
-	public static void main(String[] args) {
-		SegmentTree st = new SegmentTree(1, 3, 5, 7, 9, 11);
-		System.out.println(st);
-	}
 }

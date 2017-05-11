@@ -6,8 +6,11 @@ import java.text.DecimalFormat;
 
 import org.junit.Test;
 
+import notebook.Notebook;
+
 public class FormatTest {
 
+	@Notebook
 	@Test
 	public void test() {
 		// rounded to 4th

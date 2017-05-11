@@ -1,9 +1,12 @@
 package notebook.gcd;
 
+import notebook.Notebook;
+
 public class ExtendedEuclid {
 	/**
-	 * @return GCD(a, b) = ax + by where [0] is GCD, [1] is x, [2] is y
+	 * @return GCD(a, b) = ax + by where [0] = GCD, [1] = x, [2] = y
 	 */
+	@Notebook
 	public static long[] gcd(long a, long b) {
 		if (b == 0)
 			return new long[] { a, 1, 0 };

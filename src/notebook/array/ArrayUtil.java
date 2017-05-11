@@ -2,6 +2,8 @@ package notebook.array;
 
 import java.util.Random;
 
+import notebook.Notebook;
+
 public class ArrayUtil {
 
 	static final Random rand = new Random();
@@ -32,6 +34,23 @@ public class ArrayUtil {
 		return arr;
 	}
 
+	@Notebook
+	public static int kthLargest(int[] arr, int k) {
+		int l = 0, h = arr.length - 1;
+		while (l <= h) {
+			int p = partition(arr, l, h);
+			int rank = arr.length - p;
+			if (rank == k)
+				return arr[p];
+			else if (rank > k)
+				l = p + 1;
+			else
+				h = p - 1;
+		}
+		return -1;
+	}
+
+	@Notebook
 	public static int partition(int[] arr, int l, int h) {
 		for (int i = l; i < h; i++)
 			if (arr[i] < arr[h])
@@ -65,21 +84,6 @@ public class ArrayUtil {
 			arr[j] ^= arr[i];
 			arr[i] ^= arr[j];
 		}
-	}
-
-	public static int kthLargest(int[] arr, int k) {
-		int l = 0, h = arr.length - 1;
-		while (l <= h) {
-			int p = partition(arr, l, h);
-			int rank = arr.length - p;
-			if (rank == k)
-				return arr[p];
-			else if (rank > k)
-				l = p + 1;
-			else
-				h = p - 1;
-		}
-		return -1;
 	}
 
 }

@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import notebook.Notebook;
+
 public class Combinations {
 
 	public static void main(String[] args) {
@@ -15,6 +17,7 @@ public class Combinations {
 	/**
 	 * @return all k-combinations of [0...n-1]
 	 */
+	@Notebook
 	public static List<List<Integer>> combinations(int n, int k) {
 		Queue<List<Integer>> q = new LinkedList<>(Arrays.asList(new ArrayList<>()));
 		while (q.peek().size() < k) {
@@ -29,6 +32,7 @@ public class Combinations {
 		return new ArrayList<>(q);
 	}
 
+	@Notebook
 	public static long choose(int n, int k) {
 		long ans = 1;
 		for (int i = 0; i < k; i++) {

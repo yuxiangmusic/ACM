@@ -2,6 +2,9 @@ package notebook.math;
 
 public class EulerTotient {
 
+	/**
+	 * @return number of positive integers < n that are relatively prime to n
+	 */
 	static long phi(long n) {
 		long r = n;
 		for (long p = 2; p * p <= n; p++) {

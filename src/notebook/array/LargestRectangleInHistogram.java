@@ -1,7 +1,10 @@
 package notebook.array;
 
+import notebook.Notebook;
+
 public class LargestRectangleInHistogram {
 
+	@Notebook
 	public static int max(int[] h) {
 		int stack[] = new int[h.length], size = 0, max = 0;
 		for (int i = 0; i < h.length; i++) {

@@ -34,6 +34,24 @@ public class ArrayUtil {
 		return arr;
 	}
 
+	/**
+	 * The i'th smallest, where i is 0 based
+	 */
+	@Notebook
+	public static int ith(int[] arr, int i) {
+		int l = 0, h = arr.length - 1;
+		while (l <= h) {
+			int p = partition(arr, l, h);
+			if (p == i)
+				return arr[p];
+			else if (p < i)
+				l = p + 1;
+			else
+				h = p - 1;
+		}
+		return -1;
+	}
+
 	@Notebook
 	public static int kthLargest(int[] arr, int k) {
 		int l = 0, h = arr.length - 1;

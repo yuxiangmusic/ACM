@@ -6,10 +6,11 @@ import notebook.Notebook;
 public class SegmentTree {
 
 	final class Node {
-		Node left, right;
-		int begin, end, sum;
+		final Node left, right;
+		final int begin, end;
+		long sum;
 
-		Node(Node left, Node right, int begin, int end, int sum) {
+		Node(Node left, Node right, int begin, int end, long sum) {
 			this.left = left;
 			this.right = right;
 			this.begin = begin;
@@ -42,11 +43,11 @@ public class SegmentTree {
 	 *            index exclusive
 	 * @return sum in [begin, end)
 	 */
-	public int sum(int begin, int end) {
+	public long sum(int begin, int end) {
 		return sumRec(root, begin, end);
 	}
 
-	private int sumRec(Node root, int begin, int end) {
+	private long sumRec(Node root, int begin, int end) {
 		if (root == null || root.end < begin || end < root.begin)
 			return 0;
 		if (begin <= root.begin && root.end <= end)

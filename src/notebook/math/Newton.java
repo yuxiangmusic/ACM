@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import notebook.Notebook;
+
 public class Newton {
 
 	public static final double DELTA = 1e-10;
@@ -11,16 +13,19 @@ public class Newton {
 	@Test
 	public void test() {
 		for (int i = 0; i < 1000; i++) {
-			assertEquals(Math.sqrt(i), Newton.sqrt(i), Newton.DELTA);
+			assertEquals(Math.sqrt(i), sqrt(i), Newton.DELTA);
 		}
 	}
 
-	// f(x) = x^2 - n = 0
-	// x = x - f/f' = x - (x^2 - n) / 2x
-	public static double sqrt(double c) {
-		double x = c, next;
+	/**
+	 * f(x) = x^2 - n = 0, f'(x) = 2x <br>
+	 * Iterating x = x - f/f' = x - (x^2 - n) / 2x until x does not change
+	 */
+	@Notebook
+	public static double sqrt(double n) {
+		double x = n, next;
 		while (true) {
-			next = x - (x - c / x) / 2;
+			next = x - (x * x - n) / (2 * x);
 			if (isNaN(next) || Math.abs(next - x) < DELTA)
 				break;
 			x = next;

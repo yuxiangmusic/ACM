@@ -4,6 +4,12 @@ import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import notebook.Notebook;
+
+/**
+ * Data structure that keeps track of median
+ */
+@Notebook
 public class MedianQueue {
 
 	Queue<Long> maxHeap = new PriorityQueue<>(Collections.reverseOrder()), minHeap = new PriorityQueue<>();

@@ -10,22 +10,6 @@ import notebook.Notebook;
 
 public class NextPermutation {
 
-	@Test
-	public void test_151() {
-		int[] actual = new int[] { 1, 5, 1 };
-		int[] expected = new int[] { 5, 1, 1 };
-		nextPermutation(actual);
-		assertArrayEquals(expected, actual);
-	}
-
-	@Test
-	public void test_4202320() {
-		int[] actual = new int[] { 4, 2, 0, 2, 3, 2, 0 };
-		int[] expected = new int[] { 4, 2, 0, 3, 0, 2, 2 };
-		nextPermutation(actual);
-		assertArrayEquals(expected, actual);
-	}
-
 	@Notebook
 	public void nextPermutation(int... nums) {
 		int i = nums.length - 1;
@@ -40,6 +24,22 @@ public class NextPermutation {
 			swap(nums, i - 1, j);
 			reverse(nums, i, nums.length - 1);
 		}
+	}
+
+	@Test
+	public void test_151() {
+		int[] actual = new int[] { 1, 5, 1 };
+		int[] expected = new int[] { 5, 1, 1 };
+		nextPermutation(actual);
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void test_4202320() {
+		int[] actual = new int[] { 4, 2, 0, 2, 3, 2, 0 };
+		int[] expected = new int[] { 4, 2, 0, 3, 0, 2, 2 };
+		nextPermutation(actual);
+		assertArrayEquals(expected, actual);
 	}
 
 }

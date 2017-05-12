@@ -17,7 +17,7 @@ public class NotebookUtil {
 	static int tabs, tabsNotebook;
 
 	static void appendLine(String line) {
-		line = removeExtraTabs(line);
+		line = removeExtraTabs(line, tabsNotebook);
 
 		System.out.println(line);
 		sb.append(line + "\n");
@@ -39,9 +39,9 @@ public class NotebookUtil {
 		return n;
 	}
 
-	static String removeExtraTabs(String line) {
+	static String removeExtraTabs(String line, int tabs) {
 		if (line.contains("\t")) {
-			line = line.substring(tabsNotebook); // remove extra tabs
+			line = line.substring(tabs); // remove extra tabs
 			line = line.replaceAll("\t", "    ");
 		}
 		return line;
@@ -73,7 +73,7 @@ public class NotebookUtil {
 					cJavadoc = true;
 				}
 				if (cJavadoc) {
-					cacheJavadoc.append(removeExtraTabs(line) + "\n");
+					cacheJavadoc.append(removeExtraTabs(line, tabs) + "\n");
 					if (trim.endsWith("*/"))
 						cJavadoc = false;
 				}

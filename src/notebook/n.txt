@@ -1,4 +1,22 @@
 // src/notebook/array/ArrayUtil.java
+/**
+ * The i'th smallest, where i is 0 based
+ */
+public static int ith(int[] arr, int i) {
+    int l = 0, h = arr.length - 1;
+    while (l <= h) {
+        int p = partition(arr, l, h);
+        if (p == i)
+            return arr[p];
+        else if (p < i)
+            l = p + 1;
+        else
+            h = p - 1;
+    }
+    return -1;
+}
+
+// src/notebook/array/ArrayUtil.java
 public static int kthLargest(int[] arr, int k) {
     int l = 0, h = arr.length - 1;
     while (l <= h) {
@@ -223,29 +241,39 @@ public static long getN(long r, long s, long a, long b) {
 }
 
 // src/notebook/gcd/ExtendedEuclid.java
-/**
- * @return GCD(a, b) = ax + by
- */
-public static ExtendedEuclid gcd(long a, long b) {
-    ExtendedEuclid ans = new ExtendedEuclid();
-    if (b == 0) {
-        ans.gcd = a;
+public class ExtendedEuclid {
+    /**
+     * @return GCD(a, b) = ax + by
+     */
+    public static ExtendedEuclid gcd(long a, long b) {
+        ExtendedEuclid ans = new ExtendedEuclid();
+        if (b == 0) {
+            ans.gcd = a;
+            ans.a = a;
+            ans.b = b;
+            ans.x = 1;
+            ans.y = 0;
+            return ans;
+        }
+        ans = gcd(b, a % b);
+        long x = ans.x, y = ans.y, q = a / b;
+
+        ans.gcd = ans.gcd;
         ans.a = a;
         ans.b = b;
-        ans.x = 1;
-        ans.y = 0;
+        ans.x = y;
+        ans.y = x - y * q;
+
         return ans;
     }
-    ans = gcd(b, a % b);
-    long x = ans.x, y = ans.y, q = a / b;
 
-    ans.gcd = ans.gcd;
-    ans.a = a;
-    ans.b = b;
-    ans.x = y;
-    ans.y = x - y * q;
+    public long gcd, a, x, b, y;
 
-    return ans;
+    @Override
+    public String toString() {
+        return String.format("%d = %d * %d + %d * %d", gcd, a, x, b, y);
+    }
+
 }
 
 // src/notebook/gcd/GCD.java
@@ -264,6 +292,308 @@ public static long gcd_itr(long a, long b) {
         b = r;
     }
     return a;
+}
+
+// src/notebook/geometry/Line2DUtil.java
+public static double distanceLineToOrigin(int[][] l) {
+    int x1 = l[0][0], y1 = l[0][1], x2 = l[1][0], y2 = l[1][1];
+    double top = Math.abs(x2 * y1 - y2 * x1);
+    double bot = Math.hypot(y2 - y1, x2 - x1);
+    return top / bot;
+}
+
+// src/notebook/geometry/Line2DUtil.java
+public static double distanceLineToPoint(int[][] l, int[] p) {
+    int x0 = p[0], y0 = p[1], x1 = l[0][0], y1 = l[0][1], x2 = l[1][0], y2 = l[1][1];
+    double top = Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1);
+    double bot = Math.hypot(y2 - y1, x2 - x1);
+    return top / bot;
+}
+
+// src/notebook/geometry/Point2DUtil.java
+/**
+ * @return positive if counter-clockwise, negative if clockwise, 0 otherwise
+ */
+public static int ccw(Point a, Point b, Point c) {
+    return a.x * b.y - a.y * b.x + b.x * c.y - b.y * c.x + c.x * a.y - c.y * a.x;
+}
+
+// src/notebook/graph/Dijkstra.java
+public class Dijkstra<V> {
+
+    private static final long INFINITY = Long.MAX_VALUE;
+
+    private final Map<V, Map<V, Long>> outMap = new HashMap<>();
+
+    private final Map<V, Long> distMap = new HashMap<>();
+
+    public void addEdge(V from, V to, long cost) {
+        get(from).put(to, cost);
+    }
+
+    public long runDijkstra(V s, V t) {
+        distMap.clear();
+        distMap.put(s, 0L);
+
+        Queue<V> pq = new PriorityQueue<>((p, q) -> Long.compare(dist(p), dist(q)));
+        pq.offer(s);
+
+        while (!pq.isEmpty()) {
+            V cur = pq.poll();
+            long curDist = dist(cur);
+            if (cur.equals(t))
+                return curDist;
+
+            for (Map.Entry<V, Long> entry : outMap.get(cur).entrySet()) {
+                V neighbor = entry.getKey();
+                long neighborCost = entry.getValue();
+                long neighborDist = dist(neighbor);
+                long altDist = curDist + neighborCost;
+                if (altDist < neighborDist) {
+                    distMap.put(neighbor, altDist);
+                    pq.offer(neighbor);
+                }
+            }
+        }
+        return INFINITY;
+    }
+
+    public long dist(V v) {
+        return distMap.getOrDefault(v, INFINITY);
+    }
+
+    private Map<V, Long> get(V from) {
+        Map<V, Long> map = outMap.get(from);
+        if (map == null)
+            outMap.put(from, map = new HashMap<>());
+        return map;
+    }
+
+}
+
+// src/notebook/graph/MaxFlow.java
+public class MaxFlow<V> {
+
+    private final Map<V, Map<V, Long>> capMap = new HashMap<>();
+
+    public void addEdge(V from, V to, long cap) {
+        get(from).put(to, cap);
+    }
+
+    private long bfs(V s, V t) {
+        Queue<V> q = new LinkedList<>();
+        q.offer(s);
+
+        Map<V, V> parent = new HashMap<>();
+        Set<V> visited = new HashSet<>();
+
+        while (!q.isEmpty()) {
+            V v = q.poll();
+            visited.add(v);
+            if (v.equals(t))
+                break;
+            for (Map.Entry<V, Long> entry : get(v).entrySet()) {
+                V w = entry.getKey();
+                if (entry.getValue() > 0 && !visited.contains(w)) {
+                    q.offer(w);
+                    parent.put(w, v);
+                }
+            }
+        }
+        // if there exists s-t path
+        if (visited.contains(t)) {
+            V p;
+            long min = Long.MAX_VALUE;
+            for (V v = t; !v.equals(s); v = p) {
+                p = parent.get(v);
+                min = Math.min(min, getCap(p, v));
+            }
+            for (V v = t; !v.equals(s); v = p) {
+                p = parent.get(v);
+                setCap(p, v, getCap(p, v) - min);
+                setCap(v, p, getCap(v, p) + min);
+            }
+            return min;
+        }
+        return 0;
+    }
+
+    private Map<V, Long> get(V from) {
+        Map<V, Long> map = capMap.get(from);
+        if (map == null)
+            capMap.put(from, map = new HashMap<>());
+        return map;
+    }
+
+    private long getCap(V from, V to) {
+        return get(from).getOrDefault(to, 0L);
+    }
+
+    public long runFordFulkerson(V s, V t) {
+        long flow, maxflow = 0;
+        while ((flow = bfs(s, t)) > 0) {
+            maxflow += flow;
+        }
+        return maxflow;
+    }
+
+    private void setCap(V from, V to, long cap) {
+        get(from).put(to, cap);
+    }
+}
+
+// src/notebook/graph/TopologicalSort.java
+public class TopologicalSort<V> {
+
+    private final class Node {
+        V data;
+
+        List<Node> in = new ArrayList<>(), out = new ArrayList<>();
+
+        Node(V data) {
+            this.data = data;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof TopologicalSort.Node) {
+                @SuppressWarnings("unchecked")
+                Node n = (Node) o;
+                return n.data == data;
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(data);
+        }
+    }
+
+    private Map<V, Node> map = new HashMap<>();
+
+    private int size = 0;
+
+    public void addEdge(V from, V to) {
+        node(from).out.add(node(to));
+        node(to).in.add(node(from));
+    }
+
+    /**
+     * Finds all possible solutions of topological sort
+     */
+    public List<List<V>> getAllSorted() {
+        List<List<V>> all = new ArrayList<>();
+        List<Node> fromList = new LinkedList<>();
+        List<Node> sortList = new LinkedList<>();
+        HashMap<Node, Integer> in = new HashMap<>();
+        for (Node n : nodes()) {
+            in.put(n, n.in.size());
+            if (n.in.size() == 0)
+                fromList.add(n);
+        }
+        getAllSorted(all, fromList, sortList, in);
+        return all;
+    }
+
+    private void getAllSorted(List<List<V>> all, List<Node> fromList, List<Node> sortList, HashMap<Node, Integer> in) {
+        if (fromList.isEmpty()) {
+            all.add(sortList.stream().map(n -> n.data).collect(Collectors.toList()));
+        } else {
+            for (int i = 0; i < fromList.size(); i++) {
+                List<Node> copySortList = new LinkedList<>(sortList);
+                List<Node> copyFromList = new LinkedList<>(fromList);
+                HashMap<Node, Integer> copyInMap = new HashMap<>(in);
+                Node from = copyFromList.remove(i);
+                copySortList.add(from);
+                for (Node to : from.out) {
+                    int inCount = copyInMap.get(to) - 1;
+                    if (inCount == 0)
+                        copyFromList.add(to);
+                    else
+                        copyInMap.put(to, inCount);
+                }
+                getAllSorted(all, copyFromList, copySortList, copyInMap);
+            }
+        }
+    }
+
+    public Collection<Node> getSortedBFS() {
+        List<Node> sorted = new ArrayList<>(size());
+        Queue<Node> queue = new LinkedList<>();
+        HashMap<Node, Integer> in = new HashMap<>();
+        for (Node n : nodes()) {
+            in.put(n, n.in.size());
+            if (n.in.size() == 0)
+                queue.offer(n);
+        }
+        while (!queue.isEmpty()) {
+            Node from = queue.poll();
+            sorted.add(from);
+            for (Node to : from.out) {
+                int inCount = in.get(to) - 1;
+                if (inCount == 0)
+                    queue.offer(to);
+                else
+                    in.put(to, inCount);
+            }
+        }
+        return sorted;
+    }
+
+    public Collection<Node> getSortedDFS() {
+        Deque<Node> deque = new LinkedList<>();
+        Set<Node> stacked = new LinkedHashSet<>();
+        Set<Node> visited = new HashSet<>();
+        for (Node n : nodes()) {
+            if (!getSortedDFS(deque, stacked, visited, n)) {
+                System.err.println("cycle: " + deque);
+                return deque;
+            }
+        }
+        return deque;
+    }
+
+    /**
+     * @return true if there is no cycle, false otherwise
+     */
+    private boolean getSortedDFS(Deque<Node> deque, Set<Node> stacked, Set<Node> visited, Node node) {
+        if (stacked.contains(node)) {
+            deque.clear();
+            deque.addAll(stacked);
+            while (!deque.peek().equals(node))
+                deque.remove();
+            return false;
+        }
+        if (visited.contains(node))
+            return true;
+        stacked.add(node);
+        visited.add(node);
+        for (Node out : node.out)
+            if (!getSortedDFS(deque, stacked, visited, out))
+                return false;
+        deque.addFirst(node);
+        stacked.remove(node);
+        return true;
+    }
+
+    private Node node(V key) {
+        if (map.containsKey(key))
+            return map.get(key);
+        Node node = new Node(key);
+        map.put(key, node);
+        size++;
+        return node;
+    }
+
+    public Collection<Node> nodes() {
+        return map.values();
+    }
+
+    public int size() {
+        return size;
+    }
+
 }
 
 // src/notebook/interval/MergeIntervals.java
@@ -308,6 +638,24 @@ public static int detect(ListNode head) {
     return index;
 }
 
+// src/notebook/math/EulerTotient.java
+/**
+ * @return number of positive integers < n that are relatively prime to n
+ */
+public static long phi(long n) {
+    long r = n;
+    for (long p = 2; p * p <= n; p++) {
+        if (n % p == 0) {
+            while (n % p == 0)
+                n /= p;
+            r -= r / p;
+        }
+    }
+    if (n > 1)
+        r -= r / n;
+    return r;
+}
+
 // src/notebook/math/Fibonacci.java
 /**
  * Calculates correct result up to n = 70
@@ -315,6 +663,38 @@ public static int detect(ListNode head) {
 public static long fib_math(int n) {
     double sqrt5 = Math.sqrt(5), golden = (1 + sqrt5) / 2;
     return (long) Math.round(Math.pow(golden, n) / sqrt5);
+}
+
+// src/notebook/math/Newton.java
+/**
+ * f(x) = x^2 - n = 0, f'(x) = 2x <br>
+ * Iterating x = x - f/f' = x - (x^2 - n) / 2x until x does not change
+ */
+public static double sqrt(double n) {
+    double x = n, next;
+    while (true) {
+        next = x - (x * x - n) / (2 * x);
+        if (isNaN(next) || Math.abs(next - x) < DELTA)
+            break;
+        x = next;
+    }
+    return x;
+}
+
+// src/notebook/permutation/NextPermutation.java
+public void nextPermutation(int... nums) {
+    int i = nums.length - 1;
+    while (i > 0 && nums[i] <= nums[i - 1])
+        i--;
+    if (i == 0)
+        reverse(nums, 0, nums.length - 1);
+    else {
+        int j = nums.length - 1;
+        while (nums[j] <= nums[i - 1])
+            j--;
+        swap(nums, i - 1, j);
+        reverse(nums, i, nums.length - 1);
+    }
 }
 
 // src/notebook/permutation/Permutations.java
@@ -366,6 +746,33 @@ public static List<Integer> primes(int n) {
         }
     }
     return primes;
+}
+
+// src/notebook/queue/MedianQueue.java
+/**
+ * Data structure that keeps track of median
+ */
+public class MedianQueue {
+
+    Queue<Long> maxHeap = new PriorityQueue<>(Collections.reverseOrder()), minHeap = new PriorityQueue<>();
+
+    public void add(long n) {
+        maxHeap.add(n);
+        minHeap.add(maxHeap.poll());
+    }
+
+    public double median() {
+        while (maxHeap.size() - minHeap.size() >= 2)
+            minHeap.offer(maxHeap.poll());
+        while (minHeap.size() - maxHeap.size() >= 1)
+            maxHeap.offer(minHeap.poll());
+        return maxHeap.size() == minHeap.size() ? (maxHeap.peek() + minHeap.peek()) / 2.0 : maxHeap.peek();
+    }
+
+    public boolean remove(long n) {
+        return maxHeap.remove(n) || minHeap.remove(n);
+    }
+
 }
 
 // src/notebook/search/SearchUtil.java
@@ -478,10 +885,11 @@ public void test() {
 public class SegmentTree {
 
     final class Node {
-        Node left, right;
-        int begin, end, sum;
+        final Node left, right;
+        final int begin, end;
+        long sum;
 
-        Node(Node left, Node right, int begin, int end, int sum) {
+        Node(Node left, Node right, int begin, int end, long sum) {
             this.left = left;
             this.right = right;
             this.begin = begin;
@@ -514,11 +922,11 @@ public class SegmentTree {
      *            index exclusive
      * @return sum in [begin, end)
      */
-    public int sum(int begin, int end) {
+    public long sum(int begin, int end) {
         return sumRec(root, begin, end);
     }
 
-    private int sumRec(Node root, int begin, int end) {
+    private long sumRec(Node root, int begin, int end) {
         if (root == null || root.end < begin || end < root.begin)
             return 0;
         if (begin <= root.begin && root.end <= end)

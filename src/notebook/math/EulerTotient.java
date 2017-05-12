@@ -1,11 +1,14 @@
 package notebook.math;
 
+import notebook.Notebook;
+
 public class EulerTotient {
 
 	/**
 	 * @return number of positive integers < n that are relatively prime to n
 	 */
-	static long phi(long n) {
+	@Notebook
+	public static long phi(long n) {
 		long r = n;
 		for (long p = 2; p * p <= n; p++) {
 			if (n % p == 0) {

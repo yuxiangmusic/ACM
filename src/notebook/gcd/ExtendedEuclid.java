@@ -2,11 +2,11 @@ package notebook.gcd;
 
 import notebook.Notebook;
 
+@Notebook
 public class ExtendedEuclid {
 	/**
 	 * @return GCD(a, b) = ax + by
 	 */
-	@Notebook
 	public static ExtendedEuclid gcd(long a, long b) {
 		ExtendedEuclid ans = new ExtendedEuclid();
 		if (b == 0) {

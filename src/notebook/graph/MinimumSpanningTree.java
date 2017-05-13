@@ -71,7 +71,7 @@ public class MinimumSpanningTree {
 		edges.sort((a, b) -> graph[a[0]][a[1]] - graph[b[0]][b[1]]);
 
 		// union find
-		int[] parent = new int[n];
+		int[] parent = new int[n], height = new int[n];
 		for (int i = 0; i < n; i++)
 			parent[i] = i;
 
@@ -88,8 +88,13 @@ public class MinimumSpanningTree {
 			int xset = find.apply(x);
 			int yset = find.apply(y);
 			if (xset != yset) {
-				// union (unbalanced)
-				parent[xset] = yset;
+				if (height[xset] > height[yset]) {
+					parent[xset] = yset;
+					height[yset]++;
+				} else {
+					parent[yset] = xset;
+					height[xset]++;
+				}
 				ans[size++] = edge;
 			}
 		}

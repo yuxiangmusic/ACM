@@ -15,28 +15,7 @@ public class KMP {
 	 */
 	public static List<Integer> kmp(String text, String pattern) {
 		List<Integer> list = new ArrayList<>();
-
-		int plen = pattern.length(), tlen = text.length();
-		int[] kmp = new int[plen];
-		for (int i = 1; i < plen; i++) {
-			if (pattern.charAt(kmp[i - 1]) == pattern.charAt(i))
-				kmp[i] = kmp[i - 1] + 1;
-			else
-				kmp[i] = 0;
-		}
-
-		for (int p = 0, t = 0; t < tlen;) {
-			if (p == 0 || t < tlen && pattern.charAt(p) == text.charAt(t)) {
-				p++;
-				t++;
-				if (p == plen) {
-					list.add(t - plen);
-					p = kmp[p - 1];
-				}
-			} else {
-				p = kmp[p - 1];
-			}
-		}
+		// TODO
 		return list;
 	}
 

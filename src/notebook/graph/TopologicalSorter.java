@@ -113,7 +113,7 @@ public class TopologicalSorter<V> {
 	}
 
 	/**
-	 * Finds all possible solutions of topological sort
+	 * Gets all topologically sorted lists
 	 */
 	public List<List<V>> sortGetAll() {
 		List<List<V>> all = new ArrayList<>();

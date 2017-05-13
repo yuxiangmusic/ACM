@@ -26,15 +26,11 @@ public class Newton {
 		double x = n, next;
 		while (true) {
 			next = x - (x * x - n) / (2 * x);
-			if (isNaN(next) || Math.abs(next - x) < DELTA)
+			if (Double.isNaN(next) || Math.abs(next - x) < DELTA)
 				break;
 			x = next;
 		}
 		return x;
-	}
-
-	public static boolean isNaN(double x) {
-		return x != x;
 	}
 
 }

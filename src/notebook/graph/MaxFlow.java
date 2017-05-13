@@ -32,7 +32,7 @@ public class MaxFlow {
 	}
 
 	@Notebook
-	public static long runFordFulkerson(int[][] graph, int s, int t) {
+	public static int runFordFulkerson(int[][] graph, int s, int t) {
 		int maxFlow = 0, parent[] = new int[graph.length];
 		while (bfs(graph, s, t, parent)) {
 			int p, min = Integer.MAX_VALUE;

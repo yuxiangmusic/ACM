@@ -295,60 +295,125 @@ public static long gcd_itr(long a, long b) {
 }
 
 // src/notebook/geometry/Line2DUtil.java
-public static double distanceLineToOrigin(int[][] l) {
-    int x1 = l[0][0], y1 = l[0][1], x2 = l[1][0], y2 = l[1][1];
-    double top = Math.abs(x2 * y1 - y2 * x1);
-    double bot = Math.hypot(y2 - y1, x2 - x1);
-    return top / bot;
-}
+/**
+ * @see {@link java.awt.geom.Line2D}
+ */
+public class Line2DUtil {
 
-// src/notebook/geometry/Line2DUtil.java
-public static double distanceLineToPoint(int[][] l, int[] p) {
-    int x0 = p[0], y0 = p[1], x1 = l[0][0], y1 = l[0][1], x2 = l[1][0], y2 = l[1][1];
-    double top = Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1);
-    double bot = Math.hypot(y2 - y1, x2 - x1);
-    return top / bot;
+    public static double ptSegDistSq(double x1, double y1, double x2, double y2, double px, double py) {
+        x2 -= x1;
+        y2 -= y1;
+        px -= x1;
+        py -= y1;
+        double dotprod = px * x2 + py * y2;
+        double projlenSq;
+        if (dotprod <= 0.0) {
+            projlenSq = 0.0;
+        } else {
+            px = x2 - px;
+            py = y2 - py;
+            dotprod = px * x2 + py * y2;
+            if (dotprod <= 0.0) {
+                projlenSq = 0.0;
+            } else {
+                projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+            }
+        }
+        double lenSq = px * px + py * py - projlenSq;
+        if (lenSq < 0) {
+            lenSq = 0;
+        }
+        return lenSq;
+    }
+
+    public static double ptSegDist(double x1, double y1, double x2, double y2, double px, double py) {
+        return Math.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
+    }
+
+    public static double ptLineDistSq(double x1, double y1, double x2, double y2, double px, double py) {
+        x2 -= x1;
+        y2 -= y1;
+        px -= x1;
+        py -= y1;
+        double dotprod = px * x2 + py * y2;
+        double projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+        double lenSq = px * px + py * py - projlenSq;
+        if (lenSq < 0) {
+            lenSq = 0;
+        }
+        return lenSq;
+    }
+
+    public static double ptLineDist(double x1, double y1, double x2, double y2, double px, double py) {
+        return Math.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
+    }
 }
 
 // src/notebook/geometry/Point2DUtil.java
 /**
  * @return positive if counter-clockwise, negative if clockwise, 0 otherwise
  */
-public static int ccw(Point a, Point b, Point c) {
+public static int ccw(Point2D a, Point2D b, Point2D c) {
     return a.x * b.y - a.y * b.x + b.x * c.y - b.y * c.x + c.x * a.y - c.y * a.x;
 }
 
 // src/notebook/graph/Dijkstra.java
-public class Dijkstra<V> {
+public static int runDijkstra(int[][] graph, int s, int t) {
+    int[] dist = new int[graph.length];
+    Arrays.fill(dist, INFINITY);
+    dist[s] = 0;
 
-    private static final long INFINITY = Long.MAX_VALUE;
+    Queue<Integer> pq = new PriorityQueue<>((p, q) -> dist[p] - dist[q]);
+    pq.offer(s);
+    while (!pq.isEmpty()) {
+        int p = pq.poll();
+        if (p == t)
+            return dist[p];
+        // for each neighbor of p
+        for (int q = 0; q < graph.length; q++) {
+            if (graph[p][q] != INFINITY) {
+                int alt = dist[p] + graph[p][q];
+                if (alt < dist[q]) {
+                    dist[q] = alt;
+                    pq.offer(q);
+                }
+            }
+        }
+    }
+    return INFINITY;
+}
 
-    private final Map<V, Map<V, Long>> outMap = new HashMap<>();
+// src/notebook/graph/DijkstraSolver.java
+public class DijkstraSolver<V> {
 
-    private final Map<V, Long> distMap = new HashMap<>();
+    private static final Integer INFINITY = Integer.MAX_VALUE;
 
-    public void addEdge(V from, V to, long cost) {
+    private final Map<V, Map<V, Integer>> costMap = new HashMap<>();
+
+    private final Map<V, Integer> distMap = new HashMap<>();
+
+    public void addEdge(V from, V to, int cost) {
         get(from).put(to, cost);
     }
 
-    public long runDijkstra(V s, V t) {
+    public int runDijkstra(V s, V t) {
         distMap.clear();
-        distMap.put(s, 0L);
+        distMap.put(s, 0);
 
-        Queue<V> pq = new PriorityQueue<>((p, q) -> Long.compare(dist(p), dist(q)));
+        Queue<V> pq = new PriorityQueue<>((p, q) -> Integer.compare(dist(p), dist(q)));
         pq.offer(s);
 
         while (!pq.isEmpty()) {
             V cur = pq.poll();
-            long curDist = dist(cur);
+            int curDist = dist(cur);
             if (cur.equals(t))
                 return curDist;
 
-            for (Map.Entry<V, Long> entry : outMap.get(cur).entrySet()) {
+            for (Map.Entry<V, Integer> entry : costMap.get(cur).entrySet()) {
                 V neighbor = entry.getKey();
-                long neighborCost = entry.getValue();
-                long neighborDist = dist(neighbor);
-                long altDist = curDist + neighborCost;
+                int neighborCost = entry.getValue();
+                int neighborDist = dist(neighbor);
+                int altDist = curDist + neighborCost;
                 if (altDist < neighborDist) {
                     distMap.put(neighbor, altDist);
                     pq.offer(neighbor);
@@ -358,33 +423,90 @@ public class Dijkstra<V> {
         return INFINITY;
     }
 
-    public long dist(V v) {
+    private int dist(V v) {
         return distMap.getOrDefault(v, INFINITY);
     }
 
-    private Map<V, Long> get(V from) {
-        Map<V, Long> map = outMap.get(from);
+    private Map<V, Integer> get(V from) {
+        Map<V, Integer> map = costMap.get(from);
         if (map == null)
-            outMap.put(from, map = new HashMap<>());
+            costMap.put(from, map = new HashMap<>());
         return map;
     }
 
 }
 
+// src/notebook/graph/FloydWarshall.java
+public static int[][] runFloydWarshall(int[][] graph) {
+    int n = graph.length;
+    int[][] dist = new int[n][n];
+
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            dist[i][j] = graph[i][j];
+
+    for (int k = 0; k < n; k++)
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+
+    return dist;
+}
+
 // src/notebook/graph/MaxFlow.java
-public class MaxFlow<V> {
+public static long runFordFulkerson(int[][] graph, int s, int t) {
+    int maxFlow = 0, parent[] = new int[graph.length];
+    while (bfs(graph, s, t, parent)) {
+        int p, min = Integer.MAX_VALUE;
+        for (int v = t; v != s; v = p) {
+            p = parent[v];
+            min = Math.min(min, graph[p][v]);
+        }
+        for (int v = t; v != s; v = p) {
+            p = parent[v];
+            graph[p][v] -= min;
+            graph[v][p] += min;
+        }
+        maxFlow += min;
+    }
+    return maxFlow;
+}
 
-    private final Map<V, Map<V, Long>> capMap = new HashMap<>();
+// src/notebook/graph/MaxFlow.java
+private static boolean bfs(int[][] graph, int s, int t, int[] parent) {
+    Queue<Integer> q = new LinkedList<>();
+    q.offer(s);
 
-    public void addEdge(V from, V to, long cap) {
+    boolean[] visited = new boolean[graph.length];
+
+    while (!q.isEmpty()) {
+        int v = q.poll();
+        visited[v] = true;
+        if (v == t)
+            break;
+        for (int w = 0; w < graph.length; w++) {
+            if (graph[v][w] > 0 && !visited[w]) {
+                q.offer(w);
+                parent[w] = v;
+            }
+        }
+    }
+    return visited[t];
+}
+
+// src/notebook/graph/MaxFlowSolver.java
+public class MaxFlowSolver<V> {
+
+    private final Map<V, Map<V, Integer>> capMap = new HashMap<>();
+
+    public void addEdge(V from, V to, int cap) {
         get(from).put(to, cap);
     }
 
-    private long bfs(V s, V t) {
+    private boolean bfs(V s, V t, Map<V, V> parent) {
         Queue<V> q = new LinkedList<>();
         q.offer(s);
 
-        Map<V, V> parent = new HashMap<>();
         Set<V> visited = new HashSet<>();
 
         while (!q.isEmpty()) {
@@ -392,7 +514,7 @@ public class MaxFlow<V> {
             visited.add(v);
             if (v.equals(t))
                 break;
-            for (Map.Entry<V, Long> entry : get(v).entrySet()) {
+            for (Map.Entry<V, Integer> entry : get(v).entrySet()) {
                 V w = entry.getKey();
                 if (entry.getValue() > 0 && !visited.contains(w)) {
                     q.offer(w);
@@ -400,10 +522,26 @@ public class MaxFlow<V> {
                 }
             }
         }
-        // if there exists s-t path
-        if (visited.contains(t)) {
+        return visited.contains(t);
+    }
+
+    private Map<V, Integer> get(V from) {
+        Map<V, Integer> map = capMap.get(from);
+        if (map == null)
+            capMap.put(from, map = new HashMap<>());
+        return map;
+    }
+
+    private int getCap(V from, V to) {
+        return get(from).getOrDefault(to, 0);
+    }
+
+    public int runFordFulkerson(V s, V t) {
+        int maxFlow = 0;
+        Map<V, V> parent = new HashMap<>();
+        while (bfs(s, t, parent)) {
             V p;
-            long min = Long.MAX_VALUE;
+            int min = Integer.MAX_VALUE;
             for (V v = t; !v.equals(s); v = p) {
                 p = parent.get(v);
                 min = Math.min(min, getCap(p, v));
@@ -413,185 +551,229 @@ public class MaxFlow<V> {
                 setCap(p, v, getCap(p, v) - min);
                 setCap(v, p, getCap(v, p) + min);
             }
-            return min;
+            maxFlow += min;
         }
-        return 0;
+        return maxFlow;
     }
 
-    private Map<V, Long> get(V from) {
-        Map<V, Long> map = capMap.get(from);
-        if (map == null)
-            capMap.put(from, map = new HashMap<>());
-        return map;
-    }
-
-    private long getCap(V from, V to) {
-        return get(from).getOrDefault(to, 0L);
-    }
-
-    public long runFordFulkerson(V s, V t) {
-        long flow, maxflow = 0;
-        while ((flow = bfs(s, t)) > 0) {
-            maxflow += flow;
-        }
-        return maxflow;
-    }
-
-    private void setCap(V from, V to, long cap) {
+    private void setCap(V from, V to, int cap) {
         get(from).put(to, cap);
     }
 }
 
 // src/notebook/graph/TopologicalSort.java
-public class TopologicalSort<V> {
+/**
+ * Topologically sorts n nodes labeled from 0 to (n - 1)
+ */
+public static int[] sortBFS(int n, int[][] edges) {
+    // adjacent list
+    List<List<Integer>> adj = new ArrayList<>(n);
+    for (int i = 0; i < n; i++)
+        adj.add(new ArrayList<>());
 
-    private final class Node {
-        V data;
-
-        List<Node> in = new ArrayList<>(), out = new ArrayList<>();
-
-        Node(V data) {
-            this.data = data;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof TopologicalSort.Node) {
-                @SuppressWarnings("unchecked")
-                Node n = (Node) o;
-                return n.data == data;
-            }
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(data);
-        }
+    // in-degrees
+    int[] in = new int[n];
+    for (int[] edge : edges) {
+        in[edge[1]]++;
+        adj.get(edge[0]).add(edge[1]);
     }
 
-    private Map<V, Node> map = new HashMap<>();
+    int ans[] = new int[adj.size()], size = 0;
+    Queue<Integer> q = new LinkedList<>();
+    for (int i = 0; i < adj.size(); i++)
+        if (in[i] == 0)
+            q.offer(i);
+    while (!q.isEmpty()) {
+        int from = q.poll();
+        ans[size++] = from;
+        for (int to : adj.get(from))
+            if (--in[to] == 0)
+                q.offer(to);
+    }
+    return size == adj.size() ? ans : new int[0];
+}
 
-    private int size = 0;
+// src/notebook/graph/TopologicalSort.java
+/**
+ * Topologically sorts n nodes labeled from 0 to (n - 1)
+ */
+public static int[] sortDFS(int n, int[][] edges) {
+    // adjacent list
+    List<List<Integer>> adj = new ArrayList<>(n);
+    for (int i = 0; i < n; i++)
+        adj.add(new ArrayList<>());
+    for (int[] edge : edges)
+        adj.get(edge[0]).add(edge[1]);
+
+    Stack<Integer> stack = new Stack<>();
+    boolean[] stacked = new boolean[adj.size()];
+    boolean[] visited = new boolean[adj.size()];
+    for (int i = 0; i < adj.size(); i++)
+        if (!sortDFS(stack, stacked, visited, i, adj))
+            return new int[0];
+
+    int ans[] = new int[n];
+    for (int i = 0; i < ans.length; i++)
+        ans[i] = stack.pop();
+    return ans;
+}
+
+// src/notebook/graph/TopologicalSort.java
+private static boolean sortDFS(Stack<Integer> stack, boolean[] stacked, boolean[] visited, int v,
+        List<List<Integer>> adj) {
+    if (stacked[v]) // check stacked 1st
+        return false;
+    if (visited[v]) // check visited 2nd
+        return true;
+    // start visiting
+    stacked[v] = true;
+    visited[v] = true;
+    for (int to : adj.get(v))
+        if (!sortDFS(stack, stacked, visited, to, adj))
+            return false;
+    stack.push(v);
+    stacked[v] = false;
+    return true;
+}
+
+// src/notebook/graph/TopologicalSorter.java
+public class TopologicalSorter<V> {
+    /**
+     * Adjacent list
+     */
+    private final Map<V, List<V>> adj = new HashMap<>();
+    /**
+     * In-degrees, needed only by BFS
+     */
+    private final Map<V, Integer> in = new HashMap<>();
 
     public void addEdge(V from, V to) {
-        node(from).out.add(node(to));
-        node(to).in.add(node(from));
+        // make sure in-degree map has all vertexes stored
+        if (!in.containsKey(from))
+            in.put(from, 0);
+        if (!in.containsKey(to))
+            in.put(to, 0);
+
+        adj(from).add(to);
+        in.put(to, 1 + in.getOrDefault(to, 0));
     }
 
-    /**
-     * Finds all possible solutions of topological sort
-     */
-    public List<List<V>> getAllSorted() {
-        List<List<V>> all = new ArrayList<>();
-        List<Node> fromList = new LinkedList<>();
-        List<Node> sortList = new LinkedList<>();
-        HashMap<Node, Integer> in = new HashMap<>();
-        for (Node n : nodes()) {
-            in.put(n, n.in.size());
-            if (n.in.size() == 0)
-                fromList.add(n);
-        }
-        getAllSorted(all, fromList, sortList, in);
-        return all;
+    private List<V> adj(V v) {
+        List<V> list = adj.get(v);
+        if (list == null)
+            adj.put(v, list = new ArrayList<>());
+        return list;
     }
 
-    private void getAllSorted(List<List<V>> all, List<Node> fromList, List<Node> sortList, HashMap<Node, Integer> in) {
-        if (fromList.isEmpty()) {
-            all.add(sortList.stream().map(n -> n.data).collect(Collectors.toList()));
-        } else {
-            for (int i = 0; i < fromList.size(); i++) {
-                List<Node> copySortList = new LinkedList<>(sortList);
-                List<Node> copyFromList = new LinkedList<>(fromList);
-                HashMap<Node, Integer> copyInMap = new HashMap<>(in);
-                Node from = copyFromList.remove(i);
-                copySortList.add(from);
-                for (Node to : from.out) {
-                    int inCount = copyInMap.get(to) - 1;
-                    if (inCount == 0)
-                        copyFromList.add(to);
-                    else
-                        copyInMap.put(to, inCount);
-                }
-                getAllSorted(all, copyFromList, copySortList, copyInMap);
-            }
-        }
-    }
+    public List<V> sortBFS() {
+        List<V> sorted = new ArrayList<>();
+        Queue<V> q = new LinkedList<>();
 
-    public Collection<Node> getSortedBFS() {
-        List<Node> sorted = new ArrayList<>(size());
-        Queue<Node> queue = new LinkedList<>();
-        HashMap<Node, Integer> in = new HashMap<>();
-        for (Node n : nodes()) {
-            in.put(n, n.in.size());
-            if (n.in.size() == 0)
-                queue.offer(n);
+        // create a copy to avoid modifying the original in-degree map
+        Map<V, Integer> in = new HashMap<>(this.in);
+
+        for (Map.Entry<V, Integer> entry : in.entrySet()) {
+            V v = entry.getKey();
+            int degree = entry.getValue();
+            if (degree == 0)
+                q.offer(v);
         }
-        while (!queue.isEmpty()) {
-            Node from = queue.poll();
+        while (!q.isEmpty()) {
+            V from = q.poll();
             sorted.add(from);
-            for (Node to : from.out) {
-                int inCount = in.get(to) - 1;
-                if (inCount == 0)
-                    queue.offer(to);
-                else
-                    in.put(to, inCount);
+            for (V to : adj(from)) {
+                int indegree = in.get(to) - 1;
+                if (indegree == 0)
+                    q.offer(to);
+                in.put(to, indegree);
             }
         }
         return sorted;
     }
 
-    public Collection<Node> getSortedDFS() {
-        Deque<Node> deque = new LinkedList<>();
-        Set<Node> stacked = new LinkedHashSet<>();
-        Set<Node> visited = new HashSet<>();
-        for (Node n : nodes()) {
-            if (!getSortedDFS(deque, stacked, visited, n)) {
-                System.err.println("cycle: " + deque);
-                return deque;
+    public List<V> sortDFS() {
+        Stack<V> stack = new Stack<>();
+        Set<V> stacked = new LinkedHashSet<>();
+        Set<V> visited = new HashSet<>();
+        for (V n : adj.keySet()) {
+            if (!sortDFS(stack, stacked, visited, n)) {
+                System.err.println("cycle: " + stack);
+                return new ArrayList<>(stack);
             }
         }
-        return deque;
+
+        // get sorted list
+        List<V> sorted = new ArrayList<>();
+        while (!stack.isEmpty())
+            sorted.add(stack.pop());
+        return sorted;
     }
 
     /**
      * @return true if there is no cycle, false otherwise
      */
-    private boolean getSortedDFS(Deque<Node> deque, Set<Node> stacked, Set<Node> visited, Node node) {
-        if (stacked.contains(node)) {
-            deque.clear();
-            deque.addAll(stacked);
-            while (!deque.peek().equals(node))
-                deque.remove();
+    private boolean sortDFS(Stack<V> stack, Set<V> stacked, Set<V> visited, V v) {
+        // cycle found
+        if (stacked.contains(v)) {
+            stack.clear();
+            stack.addAll(stacked);
+            while (!stack.peek().equals(v))
+                stack.pop();
             return false;
         }
-        if (visited.contains(node))
+        if (visited.contains(v))
             return true;
-        stacked.add(node);
-        visited.add(node);
-        for (Node out : node.out)
-            if (!getSortedDFS(deque, stacked, visited, out))
+
+        // start visiting
+        stacked.add(v);
+        visited.add(v);
+        for (V out : adj(v))
+            if (!sortDFS(stack, stacked, visited, out))
                 return false;
-        deque.addFirst(node);
-        stacked.remove(node);
+        stack.push(v);
+        stacked.remove(v);
         return true;
     }
 
-    private Node node(V key) {
-        if (map.containsKey(key))
-            return map.get(key);
-        Node node = new Node(key);
-        map.put(key, node);
-        size++;
-        return node;
+    /**
+     * Finds all possible solutions of topological sort
+     */
+    public List<List<V>> sortGetAll() {
+        List<List<V>> all = new ArrayList<>();
+        List<V> sortedList = new LinkedList<>();
+        List<V> zeroinList = new LinkedList<>();
+
+        for (Map.Entry<V, Integer> entry : in.entrySet()) {
+            V v = entry.getKey();
+            int degree = entry.getValue();
+            if (degree == 0)
+                zeroinList.add(v);
+        }
+        sortGetAll(all, sortedList, zeroinList, in);
+        return all;
     }
 
-    public Collection<Node> nodes() {
-        return map.values();
-    }
+    private void sortGetAll(List<List<V>> all, List<V> sortedList, List<V> zeroinList, Map<V, Integer> in) {
+        if (zeroinList.isEmpty()) {
+            all.add(sortedList);
+            return;
+        }
+        for (int i = 0; i < zeroinList.size(); i++) {
+            List<V> sortedListCopy = new LinkedList<>(sortedList);
+            List<V> zeroinListCopy = new LinkedList<>(zeroinList);
+            Map<V, Integer> inCopy = new HashMap<>(in);
 
-    public int size() {
-        return size;
+            V from = zeroinListCopy.remove(i);
+            sortedListCopy.add(from);
+
+            for (V to : adj.get(from)) {
+                int indegree = inCopy.get(to) - 1;
+                if (indegree == 0)
+                    zeroinListCopy.add(to);
+                inCopy.put(to, indegree);
+            }
+            sortGetAll(all, sortedListCopy, zeroinListCopy, inCopy);
+        }
     }
 
 }

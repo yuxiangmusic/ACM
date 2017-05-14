@@ -83,6 +83,7 @@ public class MinimumSpanningTree {
 
 		int ans[][] = new int[n - 1][], size = 0;
 		for (int[] edge : edges) {
+			// union x and y
 			int x = edge[0];
 			int y = edge[1];
 			int xset = find.apply(x);

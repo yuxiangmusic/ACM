@@ -6,7 +6,7 @@ import notebook.Notebook;
  * @see {@link java.awt.geom.Line2D}
  */
 @Notebook
-public class Line2DUtil {
+public class LineUtil {
 
 	public static double ptSegDistSq(double x1, double y1, double x2, double y2, double px, double py) {
 		x2 -= x1;

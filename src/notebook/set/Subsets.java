@@ -16,7 +16,8 @@ public class Subsets {
 
 	@Notebook
 	public static List<List<Integer>> subsets(int... nums) {
-		List<List<Integer>> subsets = new ArrayList<>(Arrays.asList(new ArrayList<>()));
+		List<List<Integer>> subsets = new ArrayList<>();
+		subsets.add(new ArrayList<>());
 		for (int i = 0, size = subsets.size(); i < nums.length; i++, size = subsets.size()) {
 			for (int j = 0; j < size; j++) {
 				List<Integer> l = new ArrayList<>(subsets.get(j));
@@ -34,7 +35,8 @@ public class Subsets {
 	@Notebook
 	public static List<List<Integer>> subsetsWithDup(int... nums) {
 		Arrays.sort(nums);
-		List<List<Integer>> subsets = new ArrayList<>(Arrays.asList(new ArrayList<>()));
+		List<List<Integer>> subsets = new ArrayList<>();
+		subsets.add(new ArrayList<>());
 		for (int i = 0, presize = 0, cursize = subsets
 				.size(); i < nums.length; i++, presize = cursize, cursize = subsets.size()) {
 			for (int j = i == 0 || nums[i] != nums[i - 1] ? 0 : presize; j < cursize; j++) {

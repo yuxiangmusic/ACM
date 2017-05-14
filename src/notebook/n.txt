@@ -357,17 +357,6 @@ public static int ccw(Point2D a, Point2D b, Point2D c) {
     return a.x * b.y - a.y * b.x + b.x * c.y - b.y * c.x + c.x * a.y - c.y * a.x;
 }
 
-// src/notebook/geometry/Polygon2D.java
-public static boolean ptInPoly(float[] x, float[] y, float testx, float testy) {
-    int i, j, n = x.length;
-    boolean c = false;
-    for (i = 0, j = n - 1; i < n; j = i++) {
-        if (((y[i] > testy) != (y[j] > testy)) && (testx < (x[j] - x[i]) * (testy - y[i]) / (y[j] - y[i]) + x[i]))
-            c = !c;
-    }
-    return c;
-}
-
 // src/notebook/graph/BellmanFord.java
 public static int[] runBellmanFord(int[][] graph, int s) {
     int[] dist = new int[graph.length];

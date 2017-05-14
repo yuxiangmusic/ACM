@@ -7,7 +7,7 @@ import org.junit.Test;
 import notebook.Notebook;
 
 public class EditDistance {
-	
+
 	@Test
 	public void test() {
 		assertEquals(1, EditDistance.minDistance("", "a"));

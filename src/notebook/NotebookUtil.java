@@ -18,7 +18,6 @@ public class NotebookUtil {
 
 	static void appendLine(String line) {
 		line = removeExtraTabs(line, tabsNotebook);
-
 		System.out.println(line);
 		sb.append(line + "\n");
 	}

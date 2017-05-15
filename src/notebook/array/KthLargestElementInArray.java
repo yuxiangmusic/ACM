@@ -1,5 +1,6 @@
 package notebook.array;
 
+import static notebook.array.ArrayUtil.kthLargest;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class KthLargestElementInArray {
 	}
 
 	public int findKthLargest(int[] arr, int k) {
-		return ArrayUtil.kthLargest(arr, k);
+		return kthLargest(arr, k);
 	}
 
 	public int findKthLargest_sort(int[] arr, int k) {

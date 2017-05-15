@@ -35,7 +35,7 @@ public class GrahamScan {
 	}
 
 	@Notebook
-	public static Point[] runGrahamScan(Point[] points) {
+	public static Point[] runGrahamScan(Point... points) {
 		if (points.length <= 1)
 			return points;
 		Point bottomLeft = bottomLeft(points);
@@ -116,8 +116,6 @@ public class GrahamScan {
 				new Point(3, 3), //
 		};
 		Point[] actual = runGrahamScan(points);
-
-		System.out.println(Arrays.toString(actual));
 
 		assertArrayEquals(expected, actual);
 	}

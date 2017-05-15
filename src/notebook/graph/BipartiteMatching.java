@@ -30,7 +30,7 @@ public class BipartiteMatching {
 	/**
 	 * @param graph
 	 *            - graph[i][j] := source i to sink j
-	 * @return
+	 * @return max number of matchings
 	 */
 	@Notebook
 	public static int matchDFS(boolean[][] graph) {

@@ -26,4 +26,9 @@ public class PointUtil {
 		return a.x * b.y - a.y * b.x + b.x * c.y - b.y * c.x + c.x * a.y - c.y * a.x;
 	}
 
+	public static int distsq(Point p, Point q) {
+		int dx = p.x - q.x;
+		int dy = p.y - q.y;
+		return dx * dx + dy * dy;
+	}
 }

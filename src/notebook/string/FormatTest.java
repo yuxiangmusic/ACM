@@ -24,6 +24,9 @@ public class FormatTest {
 
 		// rounded
 		assertEquals("00.14", new DecimalFormat("00.00").format(0.135));
+
+		// convenient way to print spaces
+		assertEquals("[  xy]", String.format("[%4s]", "xy"));
 	}
 
 }

@@ -1,5 +1,42 @@
 // src/notebook/array/ArrayUtil.java
 /**
+ * @return i'th smallest
+ */
+public static <E> E ith(E[] arr, int i, Comparator<E> comp) {
+    int l = 0, h = arr.length - 1;
+    while (l <= h) {
+        int p = partition(arr, l, h, comp);
+        if (p == i)
+            return arr[p];
+        else if (p < i)
+            l = p + 1;
+        else
+            h = p - 1;
+    }
+    return null;
+}
+
+// src/notebook/array/ArrayUtil.java
+/**
+ * @return (i - l)'th smallest
+ */
+public static <E> E ith(E[] arr, int l, int h, int i, Comparator<E> comp) {
+    if (i < l || i > h)
+        throw new IllegalArgumentException();
+    while (l <= h) {
+        int p = partition(arr, l, h, comp);
+        if (p == i)
+            return arr[p];
+        else if (p < i)
+            l = p + 1;
+        else
+            h = p - 1;
+    }
+    return null;
+}
+
+// src/notebook/array/ArrayUtil.java
+/**
  * The i'th smallest, where i is 0 based
  */
 public static int ith(int[] arr, int i) {
@@ -13,11 +50,32 @@ public static int ith(int[] arr, int i) {
         else
             h = p - 1;
     }
-    return -1;
+    return 0;
+}
+
+// src/notebook/array/ArrayUtil.java
+/**
+ * @return (i - l)'th smallest
+ */
+public static int ith(int[] arr, int l, int h, int i) {
+    if (i < l || i > h)
+        throw new IllegalArgumentException();
+    while (l <= h) {
+        int p = partition(arr, l, h);
+        if (p == i)
+            return arr[p];
+        else if (p < i)
+            l = p + 1;
+        else
+            h = p - 1;
+    }
+    return 0;
 }
 
 // src/notebook/array/ArrayUtil.java
 public static int kthLargest(int[] arr, int k) {
+    if (k > arr.length)
+        throw new IllegalArgumentException();
     int l = 0, h = arr.length - 1;
     while (l <= h) {
         int p = partition(arr, l, h);
@@ -29,7 +87,7 @@ public static int kthLargest(int[] arr, int k) {
         else
             h = p - 1;
     }
-    return -1;
+    return 0;
 }
 
 // src/notebook/array/ArrayUtil.java
@@ -294,67 +352,216 @@ public static long gcd_itr(long a, long b) {
     return a;
 }
 
-// src/notebook/geometry/Line2DUtil.java
-/**
- * @see {@link java.awt.geom.Line2D}
- */
-public class Line2DUtil {
+// src/notebook/geometry/GrahamScan.java
+private static Point bottomLeft(Point[] points) {
+    Point bottomLeft = points[0];
+    for (Point p : points)
+        if (p.y < bottomLeft.y || p.y == bottomLeft.y && p.x < bottomLeft.x)
+            bottomLeft = p;
+    return bottomLeft;
+}
 
-    public static double ptSegDistSq(double x1, double y1, double x2, double y2, double px, double py) {
-        x2 -= x1;
-        y2 -= y1;
-        px -= x1;
-        py -= y1;
-        double dotprod = px * x2 + py * y2;
-        double projlenSq;
+// src/notebook/geometry/GrahamScan.java
+private static void sortByPolar(Point[] points, Point r) {
+    Arrays.sort(points, (p, q) -> {
+        int x1 = p.x - r.x;
+        int y1 = p.y - r.y;
+        int x2 = q.x - r.x;
+        int y2 = q.y - r.y;
+        int compPolar = x2 * y1 - x1 * y2;
+        int compDist = (x1 * x1 + y1 * y1) - (x2 * x2 + y2 * y2);
+        return compPolar == 0 ? compDist : compPolar;
+    });
+}
+
+// src/notebook/geometry/GrahamScan.java
+public static Point[] runGrahamScan(Point... points) {
+    if (points.length <= 1)
+        return points;
+    Point bottomLeft = bottomLeft(points);
+    sortByPolar(points, bottomLeft);
+    Stack<Point> stack = new Stack<>();
+    int i = 0;
+    stack.push(points[i++]);
+    stack.push(points[i++]);
+    for (; i < points.length; i++) {
+        if (ccw(points[0], points[1], points[i]) == 0) {
+            stack.pop(); // skip mid point on the same line
+            stack.push(points[i]);
+        } else {
+            break;
+        }
+    }
+    for (; i < points.length; i++) {
+        Point top = stack.pop();
+        while (ccw(stack.peek(), top, points[i]) <= 0)
+            top = stack.pop();
+        stack.push(top);
+        stack.push(points[i]);
+    }
+    return stack.stream().toArray(Point[]::new);
+}
+
+// src/notebook/geometry/LineUtil.java
+/**
+ * @see {@link java.awt.geom.Line2D#linesIntersect(double, double, double, double, double, double, double, double)}
+ */
+public static boolean linesIntersect(double x1, double y1, double x2, double y2, double x3, double y3, double x4,
+        double y4) {
+    return ((relativeCCW(x1, y1, x2, y2, x3, y3) * relativeCCW(x1, y1, x2, y2, x4, y4) <= 0)
+            && (relativeCCW(x3, y3, x4, y4, x1, y1) * relativeCCW(x3, y3, x4, y4, x2, y2) <= 0));
+}
+
+// src/notebook/geometry/LineUtil.java
+/**
+ * @see {@link java.awt.geom.Line2D#ptLineDist(double, double)}
+ */
+public static double ptLineDist(double x1, double y1, double x2, double y2, double px, double py) {
+    return Math.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
+}
+
+// src/notebook/geometry/LineUtil.java
+/**
+ * @see {@link java.awt.geom.Line2D#ptLineDistSq(double, double)}
+ */
+public static double ptLineDistSq(double x1, double y1, double x2, double y2, double px, double py) {
+    x2 -= x1;
+    y2 -= y1;
+    px -= x1;
+    py -= y1;
+    double dotprod = px * x2 + py * y2;
+    double projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+    double lenSq = px * px + py * py - projlenSq;
+    if (lenSq < 0) {
+        lenSq = 0;
+    }
+    return lenSq;
+}
+
+// src/notebook/geometry/LineUtil.java
+/**
+ * @see {@link java.awt.geom.Line2D#ptSegDist(double, double)}
+ */
+public static double ptSegDist(double x1, double y1, double x2, double y2, double px, double py) {
+    return Math.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
+}
+
+// src/notebook/geometry/LineUtil.java
+/**
+ * @see {@link java.awt.geom.Line2D#ptSegDistSq(double, double)}
+ */
+public static double ptSegDistSq(double x1, double y1, double x2, double y2, double px, double py) {
+    x2 -= x1;
+    y2 -= y1;
+    px -= x1;
+    py -= y1;
+    double dotprod = px * x2 + py * y2;
+    double projlenSq;
+    if (dotprod <= 0.0) {
+        projlenSq = 0.0;
+    } else {
+        px = x2 - px;
+        py = y2 - py;
+        dotprod = px * x2 + py * y2;
         if (dotprod <= 0.0) {
             projlenSq = 0.0;
         } else {
-            px = x2 - px;
-            py = y2 - py;
-            dotprod = px * x2 + py * y2;
-            if (dotprod <= 0.0) {
-                projlenSq = 0.0;
-            } else {
-                projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
-            }
+            projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
         }
-        double lenSq = px * px + py * py - projlenSq;
-        if (lenSq < 0) {
-            lenSq = 0;
-        }
-        return lenSq;
     }
-
-    public static double ptSegDist(double x1, double y1, double x2, double y2, double px, double py) {
-        return Math.sqrt(ptSegDistSq(x1, y1, x2, y2, px, py));
+    double lenSq = px * px + py * py - projlenSq;
+    if (lenSq < 0) {
+        lenSq = 0;
     }
-
-    public static double ptLineDistSq(double x1, double y1, double x2, double y2, double px, double py) {
-        x2 -= x1;
-        y2 -= y1;
-        px -= x1;
-        py -= y1;
-        double dotprod = px * x2 + py * y2;
-        double projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
-        double lenSq = px * px + py * py - projlenSq;
-        if (lenSq < 0) {
-            lenSq = 0;
-        }
-        return lenSq;
-    }
-
-    public static double ptLineDist(double x1, double y1, double x2, double y2, double px, double py) {
-        return Math.sqrt(ptLineDistSq(x1, y1, x2, y2, px, py));
-    }
+    return lenSq;
 }
 
-// src/notebook/geometry/Point2DUtil.java
+// src/notebook/geometry/LineUtil.java
+/**
+ * @see {@link java.awt.geom.Line2D#relativeCCW(double, double, double, double, double, double)}
+ */
+public static int relativeCCW(double x1, double y1, double x2, double y2, double px, double py) {
+    x2 -= x1;
+    y2 -= y1;
+    px -= x1;
+    py -= y1;
+    double ccw = px * y2 - py * x2;
+    if (ccw == 0.0) {
+        ccw = px * x2 + py * y2;
+        if (ccw > 0.0) {
+            px -= x2;
+            py -= y2;
+            ccw = px * x2 + py * y2;
+            if (ccw < 0.0) {
+                ccw = 0.0;
+            }
+        }
+    }
+    return (ccw < 0.0) ? -1 : ((ccw > 0.0) ? 1 : 0);
+}
+
+// src/notebook/geometry/PointUtil.java
 /**
  * @return positive if counter-clockwise, negative if clockwise, 0 otherwise
  */
-public static int ccw(Point2D a, Point2D b, Point2D c) {
+public static int ccw(Point a, Point b, Point c) {
     return a.x * b.y - a.y * b.x + b.x * c.y - b.y * c.x + c.x * a.y - c.y * a.x;
+}
+
+// src/notebook/geometry/PolygonUtil.java
+/**
+ * @param p
+ *            points sorted in counter-clockwise order
+ * @return area of the polygon
+ */
+public static double area(Point... p) {
+    int a = 0, j = p.length - 1;
+    for (int i = 0; i < p.length; j = i++)
+        a += (p[i].x + p[j].x) * (p[i].y - p[j].y);
+    return a / 2.0;
+}
+
+// src/notebook/geometry/PolygonUtil.java
+public static boolean contains(Point[] p, Point test) {
+    int i, j;
+    boolean contains = false;
+    for (i = 0, j = p.length - 1; i < p.length; j = i++)
+        if ((p[i].y > test.y) != (p[j].y > test.y)
+                && (test.x < (p[j].x - p[i].x) * (test.y - p[i].y) / (p[j].y - p[i].y) + p[i].x))
+            contains = !contains;
+    return contains;
+}
+
+// src/notebook/geometry/TriangleUtil.java
+public static double area(double a, double b, double c) {
+    double s = semiPerimeter(a, b, c);
+    double areaSq = s * (s - a) * (s - b) * (s - c);
+    return Math.sqrt(areaSq);
+}
+
+// src/notebook/geometry/TriangleUtil.java
+public static double circumcircleRadius(double a, double b, double c) {
+    return a * b * c / Math.sqrt((a + b + c) * (b + c - a) * (a + c - b) * (a + b - c));
+}
+
+// src/notebook/geometry/TriangleUtil.java
+/**
+ * @return radius of excircle touching a
+ */
+public static double excircleRadius(double a, double b, double c) {
+    double s = semiPerimeter(a, b, c);
+    double radiusSq = s * (s - b) * (s - c) / (s - a);
+    return Math.sqrt(radiusSq);
+}
+
+// src/notebook/geometry/TriangleUtil.java
+public static double incircleRadius(double a, double b, double c) {
+    return area(a, b, c) / semiPerimeter(a, b, c);
+}
+
+// src/notebook/geometry/TriangleUtil.java
+public static double semiPerimeter(double a, double b, double c) {
+    return (a + b + c) / 2;
 }
 
 // src/notebook/graph/BellmanFord.java
@@ -389,7 +596,7 @@ public static int[] runBellmanFord(int[][] graph, int s) {
 /**
  * @param graph
  *            - graph[i][j] := source i to sink j
- * @return
+ * @return max number of matchings
  */
 public static int matchDFS(boolean[][] graph) {
     int m = graph.length; // source
@@ -657,6 +864,7 @@ public static int[][] runKruskal(int[][] graph) {
 
     int ans[][] = new int[n - 1][], size = 0;
     for (int[] edge : edges) {
+        // union x and y
         int x = edge[0];
         int y = edge[1];
         int xset = find.apply(x);
@@ -978,19 +1186,19 @@ public static double sqrt(double n) {
 }
 
 // src/notebook/permutation/NextPermutation.java
-public void nextPermutation(int... nums) {
+public static void nextPermutation(int... nums) {
     int i = nums.length - 1;
     while (i > 0 && nums[i] <= nums[i - 1])
         i--;
-    if (i == 0)
+    if (i == 0) {
         reverse(nums, 0, nums.length - 1);
-    else {
-        int j = nums.length - 1;
-        while (nums[j] <= nums[i - 1])
-            j--;
-        swap(nums, i - 1, j);
-        reverse(nums, i, nums.length - 1);
+        return;
     }
+    int j = nums.length - 1;
+    while (nums[j] <= nums[i - 1])
+        j--;
+    swap(nums, i - 1, j);
+    reverse(nums, i, nums.length - 1);
 }
 
 // src/notebook/permutation/Permutations.java
@@ -1100,7 +1308,8 @@ public static int binarySearchBiasR(int[] arr, int key) {
 
 // src/notebook/set/Subsets.java
 public static List<List<Integer>> subsets(int... nums) {
-    List<List<Integer>> subsets = new ArrayList<>(Arrays.asList(new ArrayList<>()));
+    List<List<Integer>> subsets = new ArrayList<>();
+    subsets.add(new ArrayList<>());
     for (int i = 0, size = subsets.size(); i < nums.length; i++, size = subsets.size()) {
         for (int j = 0; j < size; j++) {
             List<Integer> l = new ArrayList<>(subsets.get(j));
@@ -1118,7 +1327,8 @@ public static List<List<Integer>> subsets(int... nums) {
  */
 public static List<List<Integer>> subsetsWithDup(int... nums) {
     Arrays.sort(nums);
-    List<List<Integer>> subsets = new ArrayList<>(Arrays.asList(new ArrayList<>()));
+    List<List<Integer>> subsets = new ArrayList<>();
+    subsets.add(new ArrayList<>());
     for (int i = 0, presize = 0, cursize = subsets
             .size(); i < nums.length; i++, presize = cursize, cursize = subsets.size()) {
         for (int j = i == 0 || nums[i] != nums[i - 1] ? 0 : presize; j < cursize; j++) {
@@ -1175,6 +1385,19 @@ public void test() {
 
     // rounded
     assertEquals("00.14", new DecimalFormat("00.00").format(0.135));
+
+    // convenient way to print spaces
+    assertEquals("[  xy]", String.format("[%4s]", "xy"));
+}
+
+// src/notebook/string/LongestCommonSubsequence.java
+public static int longestCommonSubsequence(String s, String t) {
+    // DP[i][j] := LCS(s.substring(i), t.substring(j))
+    int dp[][] = new int[s.length() + 1][t.length() + 1];
+    for (int i = s.length() - 1; i >= 0; i--)
+        for (int j = t.length() - 1; j >= 0; j--)
+            dp[i][j] = s.charAt(i) == t.charAt(j) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    return dp[0][0];
 }
 
 // src/notebook/tree/SegmentTree.java
@@ -1262,5 +1485,112 @@ public class SegmentTree {
         toStringAsTree(sb, root.right, depth + 1);
     }
 
+}
+
+// src/notebook/tree/TwoDTree.java
+/**
+ * @author Yuxiang Zhang
+ */
+public class TwoDTree {
+
+    private static final class Node {
+        private Node left, right;
+        private final Point p;
+
+        private final boolean y;
+
+        private Node(Point p, boolean y) {
+            this.p = p;
+            this.y = y;
+        }
+    }
+
+    private Node root;
+    private Comparator<Point> xcomp = (p, q) -> p.x - q.x;
+    private Comparator<Point> ycomp = (p, q) -> p.y - q.y;
+
+    public TwoDTree(Point[] points) {
+        buildTree(points);
+    }
+
+    private void buildTree(Point[] points) {
+        root = buildTree(points, 0, points.length - 1, false);
+    }
+
+    private Node buildTree(Point[] points, int l, int h, boolean y) {
+        if (l > h)
+            return null;
+        if (l == h)
+            return new Node(points[l], y);
+        int mid = (l + h) >>> 1;
+        Point p = ith(points, l, h, mid, y ? ycomp : xcomp);
+        Node node = new Node(p, y);
+        node.left = buildTree(points, l, mid - 1, !y);
+        node.right = buildTree(points, mid + 1, h, !y);
+        return node;
+    }
+
+    public Point nearest(Point p) {
+        Point nearest[] = { node(p).p };
+        if (nearest[0].equals(p))
+            return nearest[0];
+        nearest(nearest, p, root);
+        return nearest[0];
+    }
+
+    private void nearest(Point[] nearest, Point p, Node root) {
+        if (root == null)
+            return;
+        if (distsq(root.p, p) < distsq(nearest[0], p))
+            nearest[0] = root.p;
+
+        // distance to hyper-plane
+        int dist = root.y ? p.y - root.p.y : p.x - root.p.x;
+        int dsq = dist * dist;
+        // radius of hyper-sphere centered at p
+        int rsq = distsq(nearest[0], p);
+
+        if ((root.y ? ycomp : xcomp).compare(p, root.p) < 0) {
+            nearest(nearest, p, root.left);
+            if (rsq > dsq)
+                nearest(nearest, p, root.right);
+        } else {
+            nearest(nearest, p, root.right);
+            if (rsq > dsq)
+                nearest(nearest, p, root.left);
+        }
+    }
+
+    private Node node(Point p) {
+        Node cur = root, pre = null;
+        while (cur != null) {
+            if (cur.p.equals(p))
+                return cur;
+            pre = cur;
+            cur = (cur.y ? ycomp : xcomp).compare(p, cur.p) < 0 ? cur.left : cur.right;
+        }
+        return pre;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        toString(sb, root, 0);
+        return sb.toString();
+    }
+
+    private void toString(StringBuilder sb, Node n, int depth) {
+        for (int i = 0; i < depth; i++)
+            sb.append(' ');
+        if (n == null) {
+            sb.append(n).append('\n');
+            return;
+        }
+        sb.append(n.p).append(' ').append(n.y ? 'y' : 'x').append('\n');
+        if (n.left != null || n.right != null) {
+            toString(sb, n.left, depth + 1);
+            toString(sb, n.right, depth + 1);
+        }
+    }
 }
 

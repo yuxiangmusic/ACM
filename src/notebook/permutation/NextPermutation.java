@@ -11,19 +11,19 @@ import notebook.Notebook;
 public class NextPermutation {
 
 	@Notebook
-	public void nextPermutation(int... nums) {
+	public static void nextPermutation(int... nums) {
 		int i = nums.length - 1;
 		while (i > 0 && nums[i] <= nums[i - 1])
 			i--;
-		if (i == 0)
+		if (i == 0) {
 			reverse(nums, 0, nums.length - 1);
-		else {
-			int j = nums.length - 1;
-			while (nums[j] <= nums[i - 1])
-				j--;
-			swap(nums, i - 1, j);
-			reverse(nums, i, nums.length - 1);
+			return;
 		}
+		int j = nums.length - 1;
+		while (nums[j] <= nums[i - 1])
+			j--;
+		swap(nums, i - 1, j);
+		reverse(nums, i, nums.length - 1);
 	}
 
 	@Test

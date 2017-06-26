@@ -38,7 +38,6 @@ public class ArrayUtil {
 	/**
 	 * @return i'th smallest
 	 */
-	@Notebook
 	public static <E> E ith(E[] arr, int i, Comparator<E> comp) {
 		int l = 0, h = arr.length - 1;
 		while (l <= h) {
@@ -56,7 +55,6 @@ public class ArrayUtil {
 	/**
 	 * @return (i - l)'th smallest in [l, h]
 	 */
-	@Notebook
 	public static <E> E ith(E[] arr, int l, int h, int i, Comparator<E> comp) {
 		if (i < l || i > h)
 			throw new IllegalArgumentException();
@@ -147,6 +145,14 @@ public class ArrayUtil {
 		return l;
 	}
 
+	public static void reverse(char[] arr, int l, int h) {
+		for (; l < h; l++, h--) {
+			arr[l] ^= arr[h];
+			arr[h] ^= arr[l];
+			arr[l] ^= arr[h];
+		}
+	}
+
 	public static void reverse(int[] arr) {
 		reverse(arr, 0, arr.length - 1);
 	}
@@ -169,6 +175,14 @@ public class ArrayUtil {
 			swap(arr, i, l + rand.nextInt(h - l));
 	}
 
+	public static void swap(char[] arr, int i, int j) {
+		if (i != j) {
+			arr[i] ^= arr[j];
+			arr[j] ^= arr[i];
+			arr[i] ^= arr[j];
+		}
+	}
+
 	public static <E> void swap(E[] arr, int i, int j) {
 		if (i != j) {
 			E swap = arr[i];
@@ -182,6 +196,14 @@ public class ArrayUtil {
 			arr[i] ^= arr[j];
 			arr[j] ^= arr[i];
 			arr[i] ^= arr[j];
+		}
+	}
+	
+	public static void swap(double[] arr, int i, int j) {
+		if (i != j) {
+			double swap = arr[i];
+			arr[i] = arr[j];
+			arr[j] = swap;
 		}
 	}
 

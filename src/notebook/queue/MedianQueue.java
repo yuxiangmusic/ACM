@@ -12,7 +12,8 @@ import notebook.Notebook;
 @Notebook
 public class MedianQueue {
 
-	Queue<Long> maxHeap = new PriorityQueue<>(Collections.reverseOrder()), minHeap = new PriorityQueue<>();
+	Queue<Long> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+	Queue<Long> minHeap = new PriorityQueue<>();
 
 	public void add(long n) {
 		maxHeap.add(n);

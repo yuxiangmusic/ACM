@@ -1,11 +1,10 @@
 package notebook.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import org.junit.Test;
 
@@ -70,31 +69,28 @@ public class MinimumSpanningTree {
 		// sort edges
 		edges.sort((a, b) -> graph[a[0]][a[1]] - graph[b[0]][b[1]]);
 
-		// union find
+		// union find (balanced)
 		int[] parent = new int[n], height = new int[n];
 		for (int i = 0; i < n; i++)
 			parent[i] = i;
 
-		Function<Integer, Integer> find = i -> {
-			while (i != parent[i])
-				i = parent[i];
-			return i;
-		};
-
 		int ans[][] = new int[n - 1][], size = 0;
 		for (int[] edge : edges) {
-			// union x and y
 			int x = edge[0];
 			int y = edge[1];
-			int xset = find.apply(x);
-			int yset = find.apply(y);
-			if (xset != yset) {
-				if (height[xset] > height[yset]) {
-					parent[xset] = yset;
-					height[yset]++;
+			// find
+			while (x != parent[x])
+				x = parent[x];
+			while (y != parent[y])
+				y = parent[y];
+			// union
+			if (x != y) {
+				if (height[x] > height[y]) {
+					parent[x] = y;
+					height[y]++;
 				} else {
-					parent[yset] = xset;
-					height[xset]++;
+					parent[y] = x;
+					height[x]++;
 				}
 				ans[size++] = edge;
 			}

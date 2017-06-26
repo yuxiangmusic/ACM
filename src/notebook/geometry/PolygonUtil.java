@@ -1,6 +1,7 @@
 package notebook.geometry;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Rectangle;
 
@@ -11,27 +12,6 @@ import notebook.Notebook;
 public class PolygonUtil {
 
 	static final double DELTA = 1e-10;
-
-	@Test
-	public void test_area_convex() {
-		assertEquals(0.5, area(new Point(0, 0), new Point(1, 0), new Point(0, 1)), DELTA);
-		assertEquals(1.5, area(new Point(0, 0), new Point(2, 1), new Point(1, 2)), DELTA);
-	}
-
-	@Test
-	public void test_area_concave() {
-		assertEquals(1.0, area(new Point(0, 0), new Point(2, 1), new Point(1, 1), new Point(1, 2)), DELTA);
-		assertEquals(1.0, area(new Point(0, 0), new Point(3, 2), new Point(1, 1), new Point(2, 3)), DELTA);
-	}
-
-	@Test
-	public void test_contains() {
-		assertTrue(contains(new Point[] { //
-				new Point(0, 0), //
-				new Point(3, 0), //
-				new Point(0, 2), //
-		}, new Point(1, 1)));
-	}
 
 	/**
 	 * @param p
@@ -46,20 +26,10 @@ public class PolygonUtil {
 		return a / 2.0;
 	}
 
-	@Notebook
-	public static boolean contains(Point[] p, Point test) {
-		int i, j;
-		boolean contains = false;
-		for (i = 0, j = p.length - 1; i < p.length; j = i++)
-			if ((p[i].y > test.y) != (p[j].y > test.y)
-					&& (test.x < (p[j].x - p[i].x) * (test.y - p[i].y) / (p[j].y - p[i].y) + p[i].x))
-				contains = !contains;
-		return contains;
-	}
-
 	/**
 	 * @see {@link java.awt.Polygon#getBoundingBox()}
 	 */
+	@Notebook
 	public static Rectangle calculateBounds(int xpoints[], int ypoints[], int npoints) {
 		int boundsMinX = Integer.MAX_VALUE;
 		int boundsMinY = Integer.MAX_VALUE;
@@ -80,6 +50,7 @@ public class PolygonUtil {
 	/**
 	 * @see {@link java.awt.Polygon#contains(double, double)}
 	 */
+	@Notebook
 	public boolean contains(int[] xpoints, int[] ypoints, int npoints, double x, double y) {
 		if (npoints <= 2 || !calculateBounds(xpoints, ypoints, npoints).contains(x, y)) {
 			return false;
@@ -135,6 +106,23 @@ public class PolygonUtil {
 			}
 		}
 		return ((hits & 1) != 0);
+	}
+
+	@Test
+	public void test_area_concave() {
+		assertEquals(1.0, area(new Point(0, 0), new Point(2, 1), new Point(1, 1), new Point(1, 2)), DELTA);
+		assertEquals(1.0, area(new Point(0, 0), new Point(3, 2), new Point(1, 1), new Point(2, 3)), DELTA);
+	}
+
+	@Test
+	public void test_area_convex() {
+		assertEquals(0.5, area(new Point(0, 0), new Point(1, 0), new Point(0, 1)), DELTA);
+		assertEquals(1.5, area(new Point(0, 0), new Point(2, 1), new Point(1, 2)), DELTA);
+	}
+
+	@Test
+	public void test_contains() {
+		assertTrue(contains(new int[] { 0, 3, 0 }, new int[] { 0, 0, 3 }, 3, 1, 1));
 	}
 
 }

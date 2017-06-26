@@ -11,6 +11,7 @@ public class SubsetSum {
 	@Test
 	public void test() {
 		assertEquals(4, subsetSum(new int[] { 1, 2, 3, 4, 5, 6 }, 7));
+		assertEquals(2, subsetSum(new int[] { 1, 2, 3, 5 }, 5));
 	}
 
 	/**

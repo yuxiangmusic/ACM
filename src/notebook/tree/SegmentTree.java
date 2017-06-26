@@ -5,12 +5,12 @@ import notebook.Notebook;
 @Notebook
 public class SegmentTree {
 
-	final class Node {
-		final Node left, right;
-		final int begin, end;
-		long sum;
+	private static final class Node {
+		private final int begin, end;
+		private final Node left, right;
+		private long sum;
 
-		Node(Node left, Node right, int begin, int end, long sum) {
+		private Node(Node left, Node right, int begin, int end, long sum) {
 			this.left = left;
 			this.right = right;
 			this.begin = begin;
@@ -19,7 +19,7 @@ public class SegmentTree {
 		}
 	}
 
-	final Node root;
+	private final Node root;
 
 	public SegmentTree(int... arr) {
 		root = buildTree(arr, 0, arr.length);
@@ -55,20 +55,6 @@ public class SegmentTree {
 		return sumRec(root.left, begin, end) + sumRec(root.right, begin, end);
 	}
 
-	public void update(int i, int value) {
-		updateRec(root, i, value);
-	}
-
-	private void updateRec(Node root, int i, int value) {
-		if (root.begin == i && i + 1 == root.end)
-			root.sum = value;
-		else if (root.begin <= i && i < root.end) {
-			updateRec(root.left, i, value);
-			updateRec(root.right, i, value);
-			root.sum = root.left.sum + root.right.sum;
-		}
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -85,6 +71,20 @@ public class SegmentTree {
 		sb.append(nodeInfo).append('\n');
 		toStringAsTree(sb, root.left, depth + 1);
 		toStringAsTree(sb, root.right, depth + 1);
+	}
+
+	public void update(int i, int value) {
+		updateRec(root, i, value);
+	}
+
+	private void updateRec(Node root, int i, int value) {
+		if (root.begin == i && i + 1 == root.end)
+			root.sum = value;
+		else if (root.begin <= i && i < root.end) {
+			updateRec(root.left, i, value);
+			updateRec(root.right, i, value);
+			root.sum = root.left.sum + root.right.sum;
+		}
 	}
 
 }

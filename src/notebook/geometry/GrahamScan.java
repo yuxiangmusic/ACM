@@ -1,6 +1,6 @@
 package notebook.geometry;
 
-import static notebook.geometry.PointUtil.ccw;
+import static notebook.geometry.PointUtil.*;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Arrays;
@@ -13,33 +13,18 @@ import notebook.Notebook;
 public class GrahamScan {
 
 	@Notebook
-	private static Point bottomLeft(Point[] points) {
+	public static Point[] runGrahamScan(Point... points) {
+		if (points.length <= 1)
+			return points;
+		// reference point
 		Point bottomLeft = points[0];
 		for (Point p : points)
 			if (p.y < bottomLeft.y || p.y == bottomLeft.y && p.x < bottomLeft.x)
 				bottomLeft = p;
-		return bottomLeft;
-	}
+		final Point r = bottomLeft;
+		// sort by polar
+		Arrays.sort(points, (p, q) -> ccw(p, r, q) == 0 ? distsq(p, r) - distsq(q, r) : ccw(p, r, q));
 
-	@Notebook
-	private static void sortByPolar(Point[] points, Point r) {
-		Arrays.sort(points, (p, q) -> {
-			int x1 = p.x - r.x;
-			int y1 = p.y - r.y;
-			int x2 = q.x - r.x;
-			int y2 = q.y - r.y;
-			int compPolar = x2 * y1 - x1 * y2;
-			int compDist = (x1 * x1 + y1 * y1) - (x2 * x2 + y2 * y2);
-			return compPolar == 0 ? compDist : compPolar;
-		});
-	}
-
-	@Notebook
-	public static Point[] runGrahamScan(Point... points) {
-		if (points.length <= 1)
-			return points;
-		Point bottomLeft = bottomLeft(points);
-		sortByPolar(points, bottomLeft);
 		Stack<Point> stack = new Stack<>();
 		int i = 0;
 		stack.push(points[i++]);

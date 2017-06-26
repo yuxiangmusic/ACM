@@ -10,8 +10,14 @@ import notebook.Notebook;
 
 public class Combinations {
 
-	public static void main(String[] args) {
-		System.out.println(combinations(4, 2));
+	@Notebook
+	public static long choose(int n, int k) {
+		long ans = 1;
+		for (int i = 0; i < k; i++) {
+			ans *= (n - i);
+			ans /= (1 + i);
+		}
+		return ans;
 	}
 
 	/**
@@ -33,12 +39,17 @@ public class Combinations {
 	}
 
 	@Notebook
-	public static long choose(int n, int k) {
-		long ans = 1;
-		for (int i = 0; i < k; i++) {
-			ans *= (n - i);
-			ans /= (1 + i);
-		}
-		return ans;
+	public static int fib(int n) {
+		int f = 0;
+		for (int i = 0; i < n; i++)
+			f += choose(n - i, i);
+		return f;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(combinations(4, 2));
+
+		for (int i = 0; i < 10; i++)
+			System.out.println(fib(i));
 	}
 }

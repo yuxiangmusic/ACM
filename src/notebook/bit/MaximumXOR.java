@@ -21,14 +21,14 @@ public class MaximumXOR {
 
 	@Test
 	public void test() {
-		assertEquals(28, findMaximumXOR(new int[] { 3, 10, 5, 25, 2, 8 }));
+		assertEquals(28, maximumXOR(new int[] { 3, 10, 5, 25, 2, 8 }));
 	}
 
 	/**
 	 * @return maximum XOR of two numbers
 	 */
 	@Notebook
-	public int findMaximumXOR(int[] nums) {
+	public int maximumXOR(int[] nums) {
 		int max = 0, mask = 0;
 		for (int i = 30; i >= 0; i--) {
 			int m = 1 << i;
